@@ -48,10 +48,6 @@ class LexicalSearchBM25S:
         for result, score in zip(results, scores):
             output = []
             for x, y in zip(result.tolist(), score.tolist()):
-                x.update({"score": float(y)})
-                if self.index2id:
-                    x["id"] = self.index2id[x["id"]]
-                output.append({"id": self.index2id[x["id"]], "score": float(y), "text": x["text"]
-                })
+                output.append({"id": self.index2id[x["id"]], "score": float(y), "text": x["text"]})
             full_output.append(output)
         return full_output
