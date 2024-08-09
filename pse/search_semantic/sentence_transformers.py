@@ -73,8 +73,8 @@ class SemanticSearchTransformers:
         logger.info(f"embed queries: {len(query)}")
         query_embedding = self.embedder.encode(query, convert_to_tensor=True, batch_size=batch_size)
         search_result = semantic_search(
-            query_embedding,
-            self.embedding,
+            query_embedding.to(self.embedder.device),
+            self.embedding.to(self.embedder.device),
             query_chunk_size=query_chunk_size,
             corpus_chunk_size=corpus_chunk_size,
             top_k=k

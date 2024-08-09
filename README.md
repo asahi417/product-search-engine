@@ -23,7 +23,7 @@ Once you created the index, you can load it by specifying `index_path` when inst
 from pse.search_lexical import LexicalSearchBM25S
 
 # instantiate search engine
-pipe = LexicalSearchBM25S(index_path="test/test_indexing.lexical_search_bm25s")
+pipe = LexicalSearchBM25S(index_path="./lexical_search_bm25s")
 # create index
 pipe.create_index(
     dataset_path="asahi417/amazon-product-search",
