@@ -23,7 +23,7 @@ Once you created the index, you can load it by specifying `index_path` when inst
 from pse.search_lexical import LexicalSearchBM25S
 
 # instantiate search engine
-pipe = LexicalSearchBM25S(index_path="./lexical_search_bm25s")
+pipe = LexicalSearchBM25S(index_path="./lexical_search")
 # create index
 pipe.create_index(
     dataset_path="asahi417/amazon-product-search",
@@ -48,3 +48,28 @@ print(result)
 ```
 
 ### Semantic Search
+```python
+from pse.search_semantic import SemanticSearchTransformers 
+
+# instantiate search engine
+pipe = SemanticSearchTransformers(index_path="./semantic_search")
+# create index
+pipe.create_index(
+    dataset_path="asahi417/amazon-product-search",
+    dataset_name="product_detail.us",
+    dataset_column_names=["product_title", "product_description", "product_bullet_point", "product_brand", "product_color"],
+    dataset_id_column="product_id"
+)
+# load index 
+pipe.load_index()
+# search
+result = pipe.search(
+    ["shirt men", "cat toy"],  # batch list of queries
+    k=2  # top_k
+)
+print(result)
+>>> [
+    [{'id': 'B07TKMBXMM', 'score': 0.695092499256134, 'text': "Men's Stylish 3D Printed Short Sleeve T-Shirts Mens Cotton Tops...'"},
+     {'id': 'B0732HVRXD', 'score': 0.6769567131996155, 'text': 'Men of the Cloth'}],
+    [{'id': 'B079RTMPRF', 'score': 0.7526216506958008, 'text': 'Cat'},
+```
