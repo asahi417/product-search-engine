@@ -9,3 +9,5 @@ dist
 __pycache__
 *.nfs000*
 .eggs
+
+test/test_indexing*

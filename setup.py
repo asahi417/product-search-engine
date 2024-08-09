@@ -33,7 +33,9 @@ setup(
         "safetensors",
         "sentencepiece",
         "protobuf",
-        "opensearch-py"
+        "bm25s",
+        "sentence_transformers"
+        "torch"
     ],
     python_requires='>=3.7',
     entry_points={
