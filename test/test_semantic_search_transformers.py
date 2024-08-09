@@ -8,7 +8,8 @@ pipe = SemanticSearchTransformers(index_path="./test/test_indexing.semantic_sear
 # create index
 pipe.create_index(
     corpus=corpus,  # a list of document
-    index2id=index2id  # a map from index to custom id (eg. query_id)
+    index2id=index2id,  # a map from index to custom id (eg. query_id)
+    batch_size=2048
 )
 pipe.load_index()
 result = pipe.search(
