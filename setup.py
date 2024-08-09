@@ -34,7 +34,7 @@ setup(
         "sentencepiece",
         "protobuf",
         "bm25s",
-        "sentence_transformers"
+        "sentence_transformers",
         "torch"
     ],
     python_requires='>=3.7',
