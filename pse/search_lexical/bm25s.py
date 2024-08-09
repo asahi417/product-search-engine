@@ -51,6 +51,7 @@ class LexicalSearchBM25S:
                 x.update({"score": float(y)})
                 if self.index2id:
                     x["id"] = self.index2id[x["id"]]
-                output.append(x)
+                output.append({"id": self.index2id[x["id"]], "score": float(y), "text": x["text"]
+                })
             full_output.append(output)
         return full_output

@@ -9,7 +9,7 @@ def get_label_from_hf(dataset_path: str = "asahi417/amazon-product-search",
                       dataset_split: Optional[str] = None,
                       dataset_query_id_name: str = "query_id",
                       dataset_label_name: str = "esci_label",
-                      dataset_product_name: str = "product_id") -> Dict:
+                      dataset_product_name: str = "product_id") -> Dict[str, Dict[str, str]]:
     if dataset_split:
         df = load_dataset(dataset_path, dataset_name, split=dataset_split).to_pandas()
     else:
@@ -17,7 +17,7 @@ def get_label_from_hf(dataset_path: str = "asahi417/amazon-product-search",
         df = pd.concat([dataset[d].to_pandas() for d in dataset])
     label_dict = {}
     for key, g in tqdm(df.groupby(dataset_query_id_name)):
-        label_dict[key] = {
+        label_dict[str(key)] = {
             r[dataset_product_name]: r[dataset_label_name] for _, r in g[[dataset_product_name, dataset_label_name]].iterrows()
         }
     return label_dict
@@ -25,7 +25,7 @@ def get_label_from_hf(dataset_path: str = "asahi417/amazon-product-search",
 
 def get_query_from_hf(dataset_path: str = "asahi417/amazon-product-search",
                       dataset_name: Optional[str] = "query_detail.us",
-                      dataset_split: Optional[str] = None,
+                      dataset_split: Optional[str] = "train",
                       dataset_query_id_name: str = "query_id",
                       dataset_query_name: str = "query") -> Dict[int, str]:
     dataset = load_dataset(dataset_path, dataset_name, split=dataset_split).to_pandas()
