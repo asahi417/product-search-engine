@@ -1,3 +1,4 @@
+# https://huggingface.co/spaces/mteb/leaderboard
 import os
 import json
 import torch
@@ -5,11 +6,38 @@ from tqdm import tqdm
 from pse.search_semantic import SemanticSearchTransformers
 from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_from_hf
 
-# https://huggingface.co/spaces/mteb/leaderboard
-# model = "BAAI/bge-en-icl"
-# batch_size = 1
+# default config
+prompt_name_index = None
+prompt_prefix_index = None
+prompt_suffix_index = None
+prompt_name_query = "s2p_query"
+prompt_prefix_query = None
+prompt_suffix_query = None
+model_kwargs = {"device_map": "balanced", "torch_dtype": torch.float16}
+
+
+# MODEL: BAAI/bge-en-icl
+model = "BAAI/bge-en-icl"
+batch_size = 1
+prompt_prefix_query = """<instruct>Given a web search query, retrieve relevant passages that answer the query.\n<query>what 
+is a virtual interface\n<response>A virtual interface is a software-defined abstraction that mimics the behavior and 
+characteristics of a physical network interface. It allows multiple logical network connections to share the same
+physical network interface, enabling efficient utilization of network resources. Virtual interfaces are commonly used 
+in virtualization technologies such as virtual machines and containers to provide network connectivity without requiring
+dedicated hardware. They facilitate flexible network configurations and help in isolating network traffic for security 
+and management purposes.\n\n<instruct>Given a web search query, retrieve relevant passages that answer the query.
+\n<query>causes of back pain in female for a week\n<response>Back pain in females lasting a week can stem from various 
+factors. Common causes include muscle strain due to lifting heavy objects or improper posture, spinal issues like 
+herniated discs or osteoporosis, menstrual cramps causing referred pain, urinary tract infections, or pelvic 
+inflammatory disease. Pregnancy-related changes can also contribute. Stress and lack of physical activity may 
+exacerbate symptoms. Proper diagnosis by a healthcare professional is crucial for effective treatment and management.
+\n\n<instruct> Given a web search query, retrieve relevant passages that answer the query.\n<query> """
+prompt_suffix_query = "\n<response>"
+
 # model = "Salesforce/SFR-Embedding-2_R"
 # batch_size = 1
+
+
 # model = "Alibaba-NLP/gte-Qwen2-7B-instruct"
 # batch_size = 1
 # prompt_name_index =
@@ -18,16 +46,12 @@ from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_fr
 # prompt_query =
 # model_kwargs = {"device_map": "balanced", "torch_dtype": torch.float16}
 
-# stella_en_1.5B_v5
+# MODEL: stella_en_1.5B_v5
 model = "dunzhang/stella_en_1.5B_v5"
 batch_size = 32
-prompt_name_index = None
-prompt_index = None
 prompt_name_query = "s2p_query"
-prompt_query = None
-model_kwargs = {"device_map": "balanced", "torch_dtype": torch.float16}
 
-
+# config
 index_path = f"./experiment/all_queries/output/cache/semantic_transformers.{os.path.basename(model)}"
 result_path = f"./experiment/all_queries/output/result/semantic_transformers.{os.path.basename(model)}.json"
 result_label_path = f"./experiment/all_queries/output/result/semantic_transformers.{os.path.basename(model)}.label.json"
@@ -44,7 +68,8 @@ if not os.path.exists(result_path):
             index2id=index2id,
             batch_size=batch_size,
             prompt_name=prompt_name_index,
-            prompt=prompt_index
+            prompt_prefix=prompt_prefix_index,
+            prompt_suffix=prompt_suffix_index
         )
     pipe.load_index()
     query = get_query_from_hf()
@@ -53,7 +78,8 @@ if not os.path.exists(result_path):
         k=64,
         batch_size=batch_size,
         prompt_name=prompt_name_query,
-        prompt=prompt_query
+        prompt_prefix=prompt_prefix_query,
+        prompt_suffix=prompt_suffix_query
     )
     with open(result_path, "w") as f:
         json.dump({q: r for q, r in zip(query.keys(), result)}, f)
