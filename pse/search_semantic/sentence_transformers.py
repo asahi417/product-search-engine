@@ -37,6 +37,8 @@ class SemanticSearchTransformers:
                      corpus: List[str],
                      index2id: Optional[Dict[int, str]] = None,
                      batch_size: int = 64,
+                     prompt_name: Optional[str] = None,
+                     prompt: Optional[str] = None,
                      overwrite: bool = False) -> None:
         if (not overwrite and os.path.exists(f"{self.index_path}/corpus.json") and
                 os.path.exists(f"{self.index_path}/embedding.npy") and
@@ -50,7 +52,12 @@ class SemanticSearchTransformers:
                 json.dump({"corpus": corpus}, f)
         if overwrite or not os.path.exists(f"{self.index_path}/embedding.npy"):
             logger.info(f"generate embedding for column: {len(corpus)}")
-            embedding = self.embedder.encode(corpus, batch_size=batch_size)
+            embedding = self.embedder.encode(
+                corpus,
+                batch_size=batch_size,
+                prompt_name=prompt_name,
+                prompt=prompt,
+            )
             logger.info(f"embeddings computed. Shape: {embedding.shape}")
             np_save(embedding, f"{self.index_path}/embedding.npy")
         if overwrite or not os.path.exists(f"{self.index_path}/index2id.json"):
@@ -61,12 +68,20 @@ class SemanticSearchTransformers:
                query: List[str],
                k: int = 16,
                batch_size: int = 64,
+               prompt_name: Optional[str] = None,
+               prompt: Optional[str] = None,
                query_chunk_size: int = 100,
                corpus_chunk_size: int = 500000) -> List[List[Dict[str, Union[str, float]]]]:
         if self.index2id is None or self.embedding is None or self.corpus is None:
             raise ValueError("load index before search")
         logger.info(f"embed queries: {len(query)}")
-        query_embedding = self.embedder.encode(query, convert_to_tensor=True, batch_size=batch_size)
+        query_embedding = self.embedder.encode(
+            query,
+            convert_to_tensor=True,
+            batch_size=batch_size,
+            prompt_name=prompt_name,
+            prompt=prompt,
+        )
         search_result = semantic_search(
             query_embedding.to(self.embedder.device),
             self.embedding.to(self.embedder.device),
