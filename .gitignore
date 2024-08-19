@@ -11,4 +11,4 @@ __pycache__
 .eggs
 
 test/test_indexing*
-experiment/output*
+experiment/*/output*
