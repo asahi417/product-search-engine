@@ -21,7 +21,7 @@ class SemanticSearchTransformers:
                  model: str = "all-MiniLM-L6-v2",
                  model_kwargs: Optional[Dict[str, Any]] = None):
         self.index_path = index_path
-        self.embedder = SentenceTransformer(model, model_kwargs=model_kwargs)
+        self.embedder = SentenceTransformer(model, model_kwargs=model_kwargs, trust_remote_code=True)
         self.index2id = None
         self.embedding = None
         self.corpus = None
