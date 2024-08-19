@@ -1,6 +1,6 @@
 import os
 import json
-from typing import Optional, List, Dict, Union
+from typing import Optional, List, Dict, Union, Any
 import torch
 from sentence_transformers import SentenceTransformer
 from sentence_transformers.util import semantic_search
@@ -18,9 +18,10 @@ class SemanticSearchTransformers:
 
     def __init__(self,
                  index_path: str,
-                 model: str = "all-MiniLM-L6-v2"):
+                 model: str = "all-MiniLM-L6-v2",
+                 model_kwargs: Optional[Dict[str, Any]] = None):
         self.index_path = index_path
-        self.embedder = SentenceTransformer(model)
+        self.embedder = SentenceTransformer(model, model_kwargs=model_kwargs)
         self.index2id = None
         self.embedding = None
         self.corpus = None

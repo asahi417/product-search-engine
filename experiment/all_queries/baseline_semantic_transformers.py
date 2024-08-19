@@ -1,24 +1,34 @@
 import os
 import json
+import torch
 from tqdm import tqdm
 from pse.search_semantic import SemanticSearchTransformers
 from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_from_hf
 
-index_path = "./experiment/all_queries/output/cache/semantic_transformers"
-result_path = "./experiment/all_queries/output/result/semantic_transformers.json"
-result_label_path = "./experiment/all_queries/output/result/semantic_transformers.label.json"
+# https://huggingface.co/spaces/mteb/leaderboard
+model = "BAAI/bge-en-icl"
+batch_size = 1
+# model = "dunzhang/stella_en_1.5B_v5"
+# batch_size = 8
+# model = "Salesforce/SFR-Embedding-2_R"
+# batch_size = 2
+
+model_kwargs = {"device_map": "balanced", "torch_dtype": torch.float16}
+index_path = f"./experiment/all_queries/output/cache/semantic_transformers.{os.path.basename(model)}"
+result_path = f"./experiment/all_queries/output/result/semantic_transformers.{os.path.basename(model)}.json"
+result_label_path = f"./experiment/all_queries/output/result/semantic_transformers.{os.path.basename(model)}.label.json"
 os.makedirs(os.path.dirname(result_path), exist_ok=True)
 
 # run experiment
 if not os.path.exists(result_path):
     # search engine
-    pipe = SemanticSearchTransformers(index_path=index_path)
+    pipe = SemanticSearchTransformers(index_path=index_path, model=model, model_kwargs=model_kwargs)
     if not os.path.exists(index_path):
         corpus, index2id = get_corpus_from_hf()
-        pipe.create_index(corpus=corpus, index2id=index2id)
+        pipe.create_index(corpus=corpus, index2id=index2id, batch_size=batch_size)
     pipe.load_index()
     query = get_query_from_hf()
-    result = pipe.search(list(query.values()), k=64)
+    result = pipe.search(list(query.values()), k=64, batch_size=batch_size)
     with open(result_path, "w") as f:
         json.dump({q: r for q, r in zip(query.keys(), result)}, f)
 with open(result_path) as f:
