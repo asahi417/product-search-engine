@@ -27,9 +27,11 @@ def get_query_from_hf(dataset_path: str = "asahi417/amazon-product-search",
                       dataset_name: Optional[str] = "query_detail.us",
                       dataset_split: Optional[str] = "train",
                       dataset_query_id_name: str = "query_id",
-                      dataset_query_name: str = "query") -> Dict[int, str]:
+                      dataset_query_name: str = "query") -> Tuple[List[str], Dict[int, str]]:
     dataset = load_dataset(dataset_path, dataset_name, split=dataset_split).to_pandas()
-    return {r[dataset_query_id_name]: r[dataset_query_name] for _, r in dataset.iterrows()}
+    corpus = [r[dataset_query_name] for _, r in dataset.iterrows()]
+    index2id = {n: str(r[dataset_query_id_name]) for n, (_, r) in enumerate(dataset.iterrows())}
+    return corpus, index2id
 
 
 def get_corpus_from_hf(dataset_path: str = "asahi417/amazon-product-search",
@@ -45,8 +47,7 @@ def get_corpus_from_hf(dataset_path: str = "asahi417/amazon-product-search",
     for row in tqdm(dataset):
         corpus.append("\n\n".join([row[c] for c in dataset_column_names if row[c]]))
     if dataset_id_column:
-        dataset_id = dataset[dataset_id_column]
-        index2id = dict(list(enumerate(dataset_id)))
+        index2id = {n: str(i) for n, i in enumerate(dataset[dataset_id_column])}
     else:
         index2id = {i: str(i) for i in range(len(corpus))}
     return corpus, index2id

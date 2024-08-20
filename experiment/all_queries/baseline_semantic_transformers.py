@@ -45,13 +45,22 @@ model_kwargs = None
 # prompt_name_query = "s2p_query"
 
 # MODEL: stella_en_400M_v5
-model = "dunzhang/stella_en_400M_v5"
-batch_size = 128
-prompt_name_query = "s2p_query"
+# model = "dunzhang/stella_en_400M_v5"
+# batch_size = 128
+# prompt_name_query = "s2p_query"
 
+# MODEL: gte-Qwen2-1.5B-instruct
+# model = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
+# batch_size = 32
+# prompt_name_query = "query"
+
+# MODEL: gte-large-en-v1.5
+model = "Alibaba-NLP/gte-large-en-v1.5"
+batch_size = 128
 
 # config
-index_path = f"./experiment/all_queries/output/cache/semantic_transformers.{os.path.basename(model)}"
+index_path = f"./experiment/all_queries/output/cache/semantic_transformers.{os.path.basename(model)}.index"
+query_path = f"./experiment/all_queries/output/cache/semantic_transformers.{os.path.basename(model)}.query"
 result_path = f"./experiment/all_queries/output/result/semantic_transformers.{os.path.basename(model)}.json"
 result_label_path = f"./experiment/all_queries/output/result/semantic_transformers.{os.path.basename(model)}.label.json"
 os.makedirs(os.path.dirname(result_path), exist_ok=True)
@@ -59,79 +68,51 @@ os.makedirs(os.path.dirname(result_path), exist_ok=True)
 # run experiment
 if not os.path.exists(result_path):
     # search engine
-    pipe = SemanticSearchTransformers(index_path=index_path, model=model, model_kwargs=model_kwargs)
-    if not os.path.exists(index_path):
-        corpus, index2id = get_corpus_from_hf()
-        pipe.create_index(
-            corpus=corpus,
-            index2id=index2id,
-            batch_size=batch_size,
-            prompt_name=prompt_name_index,
-            prompt_prefix=prompt_prefix_index,
-            prompt_suffix=prompt_suffix_index
-        )
-    pipe.load_index()
-    query = get_query_from_hf()
-    result = pipe.search(
-        list(query.values()),
-        k=64,
-        batch_size=batch_size,
-        prompt_name=prompt_name_query,
-        prompt_prefix=prompt_prefix_query,
-        prompt_suffix=prompt_suffix_query
+    pipe = SemanticSearchTransformers(
+        index_path=index_path,
+        query_path=index_path,
+        model=model,
+        model_kwargs=model_kwargs
     )
+    corpus, index2id = get_corpus_from_hf()
+    pipe.encode_document(
+        corpus=corpus,
+        index2id=index2id,
+        batch_size=batch_size,
+        prompt_name=prompt_name_index,
+        prompt_prefix=prompt_prefix_index,
+        prompt_suffix=prompt_suffix_index
+    )
+    corpus, index2id = get_query_from_hf()
+    pipe.encode_query(
+        corpus=corpus,
+        index2id=index2id,
+        batch_size=batch_size,
+        prompt_name=prompt_name_index,
+        prompt_prefix=prompt_prefix_index,
+        prompt_suffix=prompt_suffix_index
+    )
+    result = pipe.search(k=64)
     with open(result_path, "w") as f:
-        json.dump({q: r for q, r in zip(query.keys(), result)}, f)
-with open(result_path) as f:
-    search_result = json.load(f)
-
-# compute metric
-if not os.path.exists(result_label_path):
-    labels = get_label_from_hf()
-    labeled_search = {}
-    for k, v in tqdm(search_result.items()):
-        labeled_search[k] = []
-        for rank, hit in enumerate(v):
-            if hit["id"] in labels[k]:
-                labeled_search[k].append({"id": hit["id"], "label": labels[k][hit["id"]], "ranking": rank + 1})
-        for product_id, label in labels[k].items():
-            if product_id not in labeled_search[k]:
-                labeled_search[k].append({"id": product_id, "label": label, "ranking": -100})
-    with open(result_label_path, "w") as f:
-        json.dump(labeled_search, f)
-with open(result_label_path) as f:
-    labeled_search = json.load(f)
-
-# TODO: Implement metric calculation
-# `labeled_search` is a dictionary where the key is query id and the value is a list of "id", "label", "ranking", eg)
-# [{'id': 'B00XBZFWWM', 'label': 'E', 'ranking': 5},
-#  {'id': 'B07X3Y6B1V', 'label': 'E', 'ranking': 10},
-#  {'id': 'B06W2LB17J', 'label': 'E', 'ranking': 11},
-#  {'id': 'B075ZBF9HG', 'label': 'E', 'ranking': 14},
-#  {'id': 'B01N5Y6002', 'label': 'E', 'ranking': 22},
-#  {'id': 'B07JY1PQNT', 'label': 'E', 'ranking': 25},
-#  {'id': 'B001E6DMKY', 'label': 'E', 'ranking': 26},
-#  {'id': 'B07QJ7WYFQ', 'label': 'E', 'ranking': 41},
-#  {'id': 'B07WDM7MQQ', 'label': 'E', 'ranking': 45},
-#  {'id': 'B003O0MNGC', 'label': 'E', 'ranking': 59},
-#  {'id': 'B07RH6Z8KW', 'label': 'E', 'ranking': 60},
-#  {'id': 'B000MOO21W', 'label': 'I', 'ranking': -100},
-#  {'id': 'B07X3Y6B1V', 'label': 'E', 'ranking': -100},
-#  {'id': 'B07WDM7MQQ', 'label': 'E', 'ranking': -100},
-#  {'id': 'B07RH6Z8KW', 'label': 'E', 'ranking': -100},
-#  {'id': 'B07QJ7WYFQ', 'label': 'E', 'ranking': -100},
-#  {'id': 'B076Q7V5WX', 'label': 'E', 'ranking': -100},
-#  {'id': 'B075ZBF9HG', 'label': 'E', 'ranking': -100},
-#  {'id': 'B06W2LB17J', 'label': 'E', 'ranking': -100},
-#  {'id': 'B07JY1PQNT', 'label': 'E', 'ranking': -100},
-#  {'id': 'B01MZIK0PI', 'label': 'E', 'ranking': -100},
-#  {'id': 'B011RX6PNO', 'label': 'I', 'ranking': -100},
-#  {'id': 'B00XBZFWWM', 'label': 'E', 'ranking': -100},
-#  {'id': 'B00MARNO5Y', 'label': 'E', 'ranking': -100},
-#  {'id': 'B003O0MNGC', 'label': 'E', 'ranking': -100},
-#  {'id': 'B001E6DMKY', 'label': 'E', 'ranking': -100},
-#  {'id': 'B01N5Y6002', 'label': 'E', 'ranking': -100}]
-# Here, ranking=-100 means the product is not in the top-64 search result.
+        json.dump(result, f)
 
 
-
+# with open(result_path) as f:
+#     search_result = json.load(f)
+#
+# # compute metric
+# if not os.path.exists(result_label_path):
+#     labels = get_label_from_hf()
+#     labeled_search = {}
+#     for k, v in tqdm(search_result.items()):
+#         labeled_search[k] = []
+#         for rank, hit in enumerate(v):
+#             if hit["id"] in labels[k]:
+#                 labeled_search[k].append({"id": hit["id"], "label": labels[k][hit["id"]], "ranking": rank + 1})
+#         for product_id, label in labels[k].items():
+#             if product_id not in labeled_search[k]:
+#                 labeled_search[k].append({"id": product_id, "label": label, "ranking": -100})
+#     with open(result_label_path, "w") as f:
+#         json.dump(labeled_search, f)
+# with open(result_label_path) as f:
+#     labeled_search = json.load(f)

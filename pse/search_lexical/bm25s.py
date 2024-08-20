@@ -25,11 +25,13 @@ class LexicalSearchBM25S:
 
     def create_index(self,
                      corpus: List[str],
-                     index2id: Dict[int, str],
+                     index2id: Optional[Dict[int, str]] = None,
                      overwrite: bool = False) -> None:
         if not overwrite and os.path.exists(self.index_path) and os.path.exists(f"{self.index_path}/index2id.json"):
             return
         logger.info("create corpus")
+        if index2id is None:
+            index2id = {n: str(n) for n in range(len(corpus))}
         if overwrite or not os.path.exists(self.index_path):
             logger.info(f"create the BM25 model and index the corpus: {len(corpus)} docs")
             corpus_tokens = bm25s.tokenize(texts=corpus, stopwords="en")
@@ -39,15 +41,20 @@ class LexicalSearchBM25S:
             with open(f"{self.index_path}/index2id.json", "w") as f:
                 json.dump(index2id, f)
 
-    def search(self, query: List[str], k: int = 16) -> List[List[Dict[str, Union[str, float]]]]:
+    def search(self,
+               query: List[str],
+               index2id: Optional[Dict[int, str]] = None,
+               k: int = 16) -> Dict[str, List[Dict[str, Union[str, float]]]]:
         if self.index2id is None:
             raise ValueError("load index before search")
+        if index2id is None:
+            index2id = {n: str(n) for n in range(len(query))}
         query_tokens = bm25s.tokenize(query)
         results, scores = self.retriever.retrieve(query_tokens, corpus=self.retriever.corpus, k=k)
-        full_output = []
-        for result, score in zip(results, scores):
+        full_output = {}
+        for n, (result, score) in enumerate(zip(results, scores)):
             output = []
             for x, y in zip(result.tolist(), score.tolist()):
                 output.append({"id": self.index2id[x["id"]], "score": float(y), "text": x["text"]})
-            full_output.append(output)
+            full_output[index2id[n]] = output
         return full_output

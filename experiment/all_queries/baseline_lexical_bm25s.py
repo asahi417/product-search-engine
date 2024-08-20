@@ -41,36 +41,5 @@ if not os.path.exists(result_label_path):
 with open(result_label_path) as f:
     labeled_search = json.load(f)
 
-# TODO: Implement metric calculation
-# `labeled_search` is a dictionary where the key is query id and the value is a list of "id", "label", "ranking", eg)
-# [{'id': 'B00XBZFWWM', 'label': 'E', 'ranking': 5},
-#  {'id': 'B07X3Y6B1V', 'label': 'E', 'ranking': 10},
-#  {'id': 'B06W2LB17J', 'label': 'E', 'ranking': 11},
-#  {'id': 'B075ZBF9HG', 'label': 'E', 'ranking': 14},
-#  {'id': 'B01N5Y6002', 'label': 'E', 'ranking': 22},
-#  {'id': 'B07JY1PQNT', 'label': 'E', 'ranking': 25},
-#  {'id': 'B001E6DMKY', 'label': 'E', 'ranking': 26},
-#  {'id': 'B07QJ7WYFQ', 'label': 'E', 'ranking': 41},
-#  {'id': 'B07WDM7MQQ', 'label': 'E', 'ranking': 45},
-#  {'id': 'B003O0MNGC', 'label': 'E', 'ranking': 59},
-#  {'id': 'B07RH6Z8KW', 'label': 'E', 'ranking': 60},
-#  {'id': 'B000MOO21W', 'label': 'I', 'ranking': -100},
-#  {'id': 'B07X3Y6B1V', 'label': 'E', 'ranking': -100},
-#  {'id': 'B07WDM7MQQ', 'label': 'E', 'ranking': -100},
-#  {'id': 'B07RH6Z8KW', 'label': 'E', 'ranking': -100},
-#  {'id': 'B07QJ7WYFQ', 'label': 'E', 'ranking': -100},
-#  {'id': 'B076Q7V5WX', 'label': 'E', 'ranking': -100},
-#  {'id': 'B075ZBF9HG', 'label': 'E', 'ranking': -100},
-#  {'id': 'B06W2LB17J', 'label': 'E', 'ranking': -100},
-#  {'id': 'B07JY1PQNT', 'label': 'E', 'ranking': -100},
-#  {'id': 'B01MZIK0PI', 'label': 'E', 'ranking': -100},
-#  {'id': 'B011RX6PNO', 'label': 'I', 'ranking': -100},
-#  {'id': 'B00XBZFWWM', 'label': 'E', 'ranking': -100},
-#  {'id': 'B00MARNO5Y', 'label': 'E', 'ranking': -100},
-#  {'id': 'B003O0MNGC', 'label': 'E', 'ranking': -100},
-#  {'id': 'B001E6DMKY', 'label': 'E', 'ranking': -100},
-#  {'id': 'B01N5Y6002', 'label': 'E', 'ranking': -100}]
-# Here, ranking=-100 means the product is not in the top-64 search result.
-
 
 
