@@ -6,6 +6,11 @@ This repository contains a minimal python library to perform search over [the pu
 git clone https://github.com/asahi417/product-search-engine
 pip install -e .
 ```
+- Flash Attention
+```shell
+pip install wheel
+pip install flash-attn --no-build-isolation
+```
 
 ## Usage
 Different types of search engines are available including lexical matching and semantic matching, and all the API can be used 

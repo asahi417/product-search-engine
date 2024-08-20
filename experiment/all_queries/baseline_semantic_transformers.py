@@ -16,29 +16,6 @@ prompt_prefix_query = None
 prompt_suffix_query = None
 model_kwargs = None
 
-# MODEL: BAAI/bge-en-icl
-# model = "BAAI/bge-en-icl"
-# prompt_prefix_query = """<instruct>Given a web search query, retrieve relevant passages that answer the query.\n<query>what
-# is a virtual interface\n<response>A virtual interface is a software-defined abstraction that mimics the behavior and
-# characteristics of a physical network interface. It allows multiple logical network connections to share the same
-# physical network interface, enabling efficient utilization of network resources. Virtual interfaces are commonly used
-# in virtualization technologies such as virtual machines and containers to provide network connectivity without requiring
-# dedicated hardware. They facilitate flexible network configurations and help in isolating network traffic for security
-# and management purposes.\n\n<instruct>Given a web search query, retrieve relevant passages that answer the query.
-# \n<query>causes of back pain in female for a week\n<response>Back pain in females lasting a week can stem from various
-# factors. Common causes include muscle strain due to lifting heavy objects or improper posture, spinal issues like
-# herniated discs or osteoporosis, menstrual cramps causing referred pain, urinary tract infections, or pelvic
-# inflammatory disease. Pregnancy-related changes can also contribute. Stress and lack of physical activity may
-# exacerbate symptoms. Proper diagnosis by a healthcare professional is crucial for effective treatment and management.
-# \n\n<instruct> Given a web search query, retrieve relevant passages that answer the query.\n<query> """
-# prompt_suffix_query = "\n<response>"
-# model_kwargs = {"device_map": "balanced", "torch_dtype": torch.float16}
-
-# MODE: SFR-Embedding-2_R
-# model = "Salesforce/SFR-Embedding-2_R"
-# prompt_prefix_query = "Instruct: Given a web search query, retrieve relevant passages that answer the query\nQuery: "
-# model_kwargs = {"device_map": "balanced", "torch_dtype": torch.bfloat16}
-
 # MODEL: stella_en_1.5B_v5
 # model = "dunzhang/stella_en_1.5B_v5"
 # batch_size = 32
@@ -50,13 +27,13 @@ model_kwargs = None
 # prompt_name_query = "s2p_query"
 
 # MODEL: gte-Qwen2-1.5B-instruct
-# model = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
-# batch_size = 32
-# prompt_name_query = "query"
+model = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
+batch_size = 32
+prompt_name_query = "query"
 
 # MODEL: gte-large-en-v1.5
-model = "Alibaba-NLP/gte-large-en-v1.5"
-batch_size = 128
+# model = "Alibaba-NLP/gte-large-en-v1.5"
+# batch_size = 128
 
 # config
 index_path = f"./experiment/all_queries/output/cache/semantic_transformers.{os.path.basename(model)}.index"
