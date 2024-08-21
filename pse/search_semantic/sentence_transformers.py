@@ -8,7 +8,7 @@ import numpy as np
 import torch
 from sentence_transformers import SentenceTransformer
 from sentence_transformers.util import semantic_search
-from ..util import get_logger, np_save, np_load
+from ..util import get_logger, np_save, np_load, clear_cache
 
 logger = get_logger(__name__)
 
@@ -110,7 +110,6 @@ class SemanticSearchTransformers:
             prompt_prefix=prompt_prefix,
             prompt_suffix=prompt_suffix
         )
-        self.index_index2id, self.index_corpus, self.index_embedding = self.load_index(self.index_path)
 
     def encode_query(self,
                      corpus: List[str],
@@ -130,12 +129,13 @@ class SemanticSearchTransformers:
             prompt_prefix=prompt_prefix,
             prompt_suffix=prompt_suffix
         )
-        self.query_index2id, self.query_corpus, self.query_embedding = self.load_index(self.query_path)
 
     def search(self,
                k: int = 16,
                query_chunk_size: int = 100,
                corpus_chunk_size: int = 500000) -> Dict[str, List[Dict[str, Union[str, float]]]]:
+        self.query_index2id, self.query_corpus, self.query_embedding = self.load_index(self.query_path)
+        self.index_index2id, self.index_corpus, self.index_embedding = self.load_index(self.index_path)
         search_result = semantic_search(
             self.query_embedding.to(self.embedder.device),
             self.index_embedding.to(self.embedder.device),

@@ -1,5 +1,12 @@
 import logging
+from gc import collect
+import torch
 import numpy as np
+
+
+def clear_cache():
+    torch.cuda.empty_cache()
+    collect()
 
 
 def np_save(array: np.ndarray, path: str) -> None:

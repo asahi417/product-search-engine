@@ -17,10 +17,10 @@ if not os.path.exists(result_path):
         corpus, index2id = get_corpus_from_hf()
         pipe.create_index(corpus=corpus, index2id=index2id)
     pipe.load_index()
-    query = get_query_from_hf(dataset_split="train")
-    result = pipe.search(list(query.values()), k=64)
+    corpus, index2id = get_query_from_hf()
+    result = pipe.search(corpus, index2id=index2id, k=64)
     with open(result_path, "w") as f:
-        json.dump({q: r for q, r in zip(query.keys(), result)}, f)
+        json.dump(result, f)
 with open(result_path) as f:
     search_result = json.load(f)
 

@@ -1,10 +1,17 @@
 # https://huggingface.co/spaces/mteb/leaderboard
 import os
 import json
-import torch
 from tqdm import tqdm
+from gc import collect
+import torch
 from pse.search_semantic import SemanticSearchTransformers
 from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_from_hf
+
+
+def clear_cache():
+    torch.cuda.empty_cache()
+    collect()
+
 
 # default config
 batch_size = 1
@@ -18,22 +25,28 @@ model_kwargs = None
 
 # MODEL: stella_en_1.5B_v5
 # model = "dunzhang/stella_en_1.5B_v5"
-# batch_size = 32
+# batch_size_query = 8192
+# batch_size_index = 64
 # prompt_name_query = "s2p_query"
-
-# MODEL: stella_en_400M_v5
+#
+# # MODEL: stella_en_400M_v5
 # model = "dunzhang/stella_en_400M_v5"
-# batch_size = 128
+# batch_size_query = 8192
+# batch_size_index = 64
 # prompt_name_query = "s2p_query"
 
 # MODEL: gte-Qwen2-1.5B-instruct
-model = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
-batch_size = 32
-prompt_name_query = "query"
+# model = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
+# batch_size_query = 1024
+# batch_size_index = 16
+# prompt_name_query = "query"
+# model_kwargs = {"device_map": "balanced", "torch_dtype": torch.float16}
 
 # MODEL: gte-large-en-v1.5
-# model = "Alibaba-NLP/gte-large-en-v1.5"
-# batch_size = 128
+model = "Alibaba-NLP/gte-large-en-v1.5"
+batch_size_query = 2048
+batch_size_index = 64
+model_kwargs = {"torch_dtype": torch.float16}
 
 # config
 index_path = f"./experiment/all_queries/output/cache/semantic_transformers.{os.path.basename(model)}.index"
@@ -47,27 +60,29 @@ if not os.path.exists(result_path):
     # search engine
     pipe = SemanticSearchTransformers(
         index_path=index_path,
-        query_path=index_path,
+        query_path=query_path,
         model=model,
-        model_kwargs=model_kwargs
+        model_kwargs=model_kwargs,
+        index_chunk=batch_size_index * 20,
+        query_chunk=batch_size_query * 20
     )
-    corpus, index2id = get_corpus_from_hf()
-    pipe.encode_document(
-        corpus=corpus,
-        index2id=index2id,
-        batch_size=batch_size,
-        prompt_name=prompt_name_index,
-        prompt_prefix=prompt_prefix_index,
-        prompt_suffix=prompt_suffix_index
-    )
+    # corpus, index2id = get_corpus_from_hf()
+    # pipe.encode_document(
+    #     corpus=corpus,
+    #     index2id=index2id,
+    #     batch_size=batch_size_index,
+    #     prompt_name=prompt_name_index,
+    #     prompt_prefix=prompt_prefix_index,
+    #     prompt_suffix=prompt_suffix_index
+    # )
     corpus, index2id = get_query_from_hf()
     pipe.encode_query(
         corpus=corpus,
         index2id=index2id,
-        batch_size=batch_size,
-        prompt_name=prompt_name_index,
-        prompt_prefix=prompt_prefix_index,
-        prompt_suffix=prompt_suffix_index
+        batch_size=batch_size_query,
+        prompt_name=prompt_name_query,
+        prompt_prefix=prompt_prefix_query,
+        prompt_suffix=prompt_suffix_query
     )
     result = pipe.search(k=64)
     with open(result_path, "w") as f:
