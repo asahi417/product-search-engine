@@ -55,7 +55,7 @@ def get_semantic_search_result(
     query_index2id, query_corpus, query_embedding = load_index(query_path)
     logger.info(f"load query: {query_embedding.shape}")
     index_index2id, index_corpus, index_embedding = load_index(index_path)
-    logger.info(f"load document: {query_embedding.shape}")
+    logger.info(f"load document: {index_embedding.shape}")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     logger.info(f"device: {device}")
     search_result = semantic_search(
