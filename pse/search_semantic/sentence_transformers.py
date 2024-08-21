@@ -1,14 +1,11 @@
 import os
 import json
-from glob import glob
 from tqdm import tqdm
-from typing import Optional, List, Dict, Union, Any
+from typing import Optional, List, Dict, Any
 
-import numpy as np
 import torch
 from sentence_transformers import SentenceTransformer
-from sentence_transformers.util import semantic_search
-from ..util import get_logger, np_save, np_load, clear_cache
+from ..util import get_logger, np_save
 
 logger = get_logger(__name__)
 
@@ -44,18 +41,6 @@ class SemanticSearchTransformers:
         self.index_corpus = None
         self.query_corpus = None
         self.embedder = SentenceTransformer(model, model_kwargs=model_kwargs, trust_remote_code=True)
-
-    @staticmethod
-    def load_index(output_dir) -> (Dict[int, str], List[str], torch.Tensor):
-        with open(f"{output_dir}/index2id.json") as f:
-            index2id = {int(k): v for k, v in json.load(f).items()}
-        with open(f"{output_dir}/corpus.json") as f:
-            corpus = json.load(f)["corpus"]
-        embedding = []
-        for numpy_file in glob(f"{output_dir}/embedding.*.npy"):
-            embedding.append(np_load(numpy_file))
-        embedding = torch.as_tensor(np.concatenate(embedding))
-        return index2id, corpus, embedding
 
     def encode(self,
                corpus: List[str],
@@ -129,28 +114,3 @@ class SemanticSearchTransformers:
             prompt_prefix=prompt_prefix,
             prompt_suffix=prompt_suffix
         )
-
-    def search(self,
-               k: int = 16,
-               query_chunk_size: int = 100,
-               corpus_chunk_size: int = 500000) -> Dict[str, List[Dict[str, Union[str, float]]]]:
-        self.query_index2id, self.query_corpus, self.query_embedding = self.load_index(self.query_path)
-        self.index_index2id, self.index_corpus, self.index_embedding = self.load_index(self.index_path)
-        search_result = semantic_search(
-            self.query_embedding.to(self.embedder.device),
-            self.index_embedding.to(self.embedder.device),
-            query_chunk_size=query_chunk_size,
-            corpus_chunk_size=corpus_chunk_size,
-            top_k=k
-        )
-        full_output = {}
-        for n, result in enumerate(search_result):
-            output = []
-            for r in result:
-                output.append({
-                    "id": self.index_index2id[r["corpus_id"]],
-                    "text": self.index_corpus[r["corpus_id"]],
-                    "score": r["score"]
-                })
-            full_output[self.query_index2id[n]] = output
-        return full_output
