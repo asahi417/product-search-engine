@@ -30,11 +30,11 @@ model_kwargs = None
 # prompt_name_query = "s2p_query"
 
 # MODEL: gte-Qwen2-1.5B-instruct
-# model = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
-# batch_size_query = 1024
-# batch_size_index = 16
-# prompt_name_query = "query"
-# model_kwargs = {"device_map": "balanced", "torch_dtype": torch.float16}
+model = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
+batch_size_query = 1024
+batch_size_index = 16
+prompt_name_query = "query"
+model_kwargs = {"device_map": "balanced", "torch_dtype": torch.float16}
 
 # MODEL: gte-large-en-v1.5
 model = "Alibaba-NLP/gte-large-en-v1.5"
