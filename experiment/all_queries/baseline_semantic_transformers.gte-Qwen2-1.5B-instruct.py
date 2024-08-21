@@ -7,40 +7,16 @@ from pse.search_semantic import SemanticSearchTransformers
 from pse.util import get_semantic_search_result
 from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_from_hf
 
-# default config
-batch_size = 1
-prompt_name_index = None
-prompt_prefix_index = None
-prompt_suffix_index = None
-prompt_name_query = None
-prompt_prefix_query = None
-prompt_suffix_query = None
-model_kwargs = None
-
-# MODEL: stella_en_1.5B_v5
-# model = "dunzhang/stella_en_1.5B_v5"
-# batch_size_query = 8192
-# batch_size_index = 64
-# prompt_name_query = "s2p_query"
-#
-# # MODEL: stella_en_400M_v5
-# model = "dunzhang/stella_en_400M_v5"
-# batch_size_query = 8192
-# batch_size_index = 64
-# prompt_name_query = "s2p_query"
-
-# MODEL: gte-Qwen2-1.5B-instruct
 model = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
 batch_size_query = 1024
 batch_size_index = 16
 prompt_name_query = "query"
 model_kwargs = {"device_map": "balanced", "torch_dtype": torch.float16}
-
-# MODEL: gte-large-en-v1.5
-model = "Alibaba-NLP/gte-large-en-v1.5"
-batch_size_query = 2048
-batch_size_index = 64
-model_kwargs = {"torch_dtype": torch.float16}
+prompt_name_index = None
+prompt_prefix_index = None
+prompt_suffix_index = None
+prompt_prefix_query = None
+prompt_suffix_query = None
 
 # config
 index_path = f"./experiment/all_queries/output/cache/semantic_transformers.{os.path.basename(model)}.index"
