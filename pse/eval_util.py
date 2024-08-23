@@ -3,7 +3,7 @@ from typing import List, Optional, Dict, Any, Tuple
 from sklearn.metrics import ndcg_score
 
 
-def convert_search_result(search_result: Dict[List[Dict[str, Any]]]):
+def convert_search_result(search_result: Dict[str, List[Dict[str, Any]]]):
     query_id = []
     y_true = []
     y_score = []
@@ -32,7 +32,7 @@ def binary_f1_score(y_true: List[List[int]], y_pred: List[List[float]], top_k: O
     return mean(full_precision), mean(full_recall), mean(full_f1)
 
 
-def calculate_metric(search_result: Dict[List[Dict[str, Any]]], top_k: Optional[List[int]] = None) -> Dict[str, float]:
+def calculate_metric(search_result: Dict[str, List[Dict[str, Any]]], top_k: Optional[List[int]] = None) -> Dict[str, float]:
     y_true, y_score, y_rank, query_id = convert_search_result(search_result)
     top_k = [None] if top_k is None else top_k
     metric = {}
