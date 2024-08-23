@@ -13,7 +13,7 @@ def convert_search_result(search_result: Dict[str, List[Dict[str, Any]]]):
         query_id.append(k)
         y_true.append([label_map[i["label"]] for i in v])
         y_score.append([i["score"] for i in v])
-        y_rank.append([i["rank"] for i in v])
+        y_rank.append([i["ranking"] for i in v])
     return y_true, y_score, y_rank, query_id
 
 
