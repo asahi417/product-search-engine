@@ -35,7 +35,8 @@ setup(
         "protobuf",
         "bm25s",
         "sentence_transformers",
-        "torch"
+        "torch",
+        "scikit-learn"
     ],
     python_requires='>=3.7',
     entry_points={

@@ -66,18 +66,17 @@ with open(result_path) as f:
     search_result = json.load(f)
 
 # compute metric
-if not os.path.exists(result_label_path):
-    labels = get_label_from_hf()
-    labeled_search = {}
-    for k, v in tqdm(search_result.items()):
-        labeled_search[k] = []
-        for rank, hit in enumerate(v):
-            if hit["id"] in labels[k]:
-                labeled_search[k].append({"id": hit["id"], "label": labels[k][hit["id"]], "ranking": rank + 1})
-        for product_id, label in labels[k].items():
-            if product_id not in labeled_search[k]:
-                labeled_search[k].append({"id": product_id, "label": label, "ranking": -100})
-    with open(result_label_path, "w") as f:
-        json.dump(labeled_search, f)
-with open(result_label_path) as f:
-    labeled_search = json.load(f)
+labels = get_label_from_hf()
+labeled_search = {}
+for k, v in tqdm(search_result.items()):
+    labeled_search[k] = []
+    for rank, hit in enumerate(v):
+        if hit["id"] in labels[k]:
+            labeled_search[k].append({"id": hit["id"], "label": labels[k][hit["id"]], "ranking": rank + 1, "score": hit["score"]})
+        else:
+            labeled_search[k].append({"id": hit["id"], "label": "None", "ranking": rank + 1, "score": hit["score"]})
+    for product_id, label in labels[k].items():
+        if product_id not in labeled_search[k]:
+            labeled_search[k].append({"id": product_id, "label": label, "ranking": -100, "score": -100})
+with open(result_label_path, "w") as f:
+    json.dump(labeled_search, f)
