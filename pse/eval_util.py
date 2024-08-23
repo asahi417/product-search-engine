@@ -37,7 +37,7 @@ def calculate_metric(search_result: Dict[str, List[Dict[str, Any]]], top_k: Opti
     top_k = [None] if top_k is None else top_k
     metric = {}
     for k in top_k:
-        metric[f"ndcg@{k}"] = ndcg_score(y_true, y_score, k=top_k)
+        metric[f"ndcg@{k}"] = ndcg_score(y_true, y_score, k=k)
         precision, recall, f1 = binary_f1_score(y_true, y_score, top_k=k)
         metric[f"precision@{k}"] = precision
         metric[f"recall@{k}"] = recall
