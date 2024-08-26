@@ -21,6 +21,6 @@ for file in glob(root_path):
         metric[model_name] = calculate_metric(search_result, top_k=top_k)
 pprint(metric)
 
-with open(output) as f:
+with open(output, "w") as f:
     json.dump(metric, f)
-print(pd.DataFrame(metric).to_markdown())
+print((pd.DataFrame(metric) * 100).round(2).to_markdown())
