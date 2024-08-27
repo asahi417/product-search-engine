@@ -1,3 +1,4 @@
+# p3.8 2
 # https://huggingface.co/spaces/mteb/leaderboard
 import os
 import json
@@ -8,8 +9,8 @@ from pse.util import get_semantic_search_result
 from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_from_hf
 
 model = "Alibaba-NLP/gte-large-en-v1.5"
-batch_size_query = 2048
-batch_size_index = 64
+batch_size_query = 4096
+batch_size_index = 128
 model_kwargs = None
 prompt_name_index = None
 prompt_prefix_index = None
