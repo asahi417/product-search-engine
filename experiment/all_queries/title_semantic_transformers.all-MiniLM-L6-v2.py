@@ -8,7 +8,7 @@ from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_fr
 
 model = "sentence-transformers/all-MiniLM-L6-v2"
 batch_size_query = 4096
-batch_size_index = 2048 * 4
+batch_size_index = 2048
 model_kwargs = None
 prompt_name_index = None
 prompt_prefix_index = None
