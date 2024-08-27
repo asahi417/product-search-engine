@@ -3,7 +3,6 @@
 import os
 import json
 from tqdm import tqdm
-import torch
 from pse.search_semantic import SemanticSearchTransformers
 from pse.util import get_semantic_search_result
 from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_from_hf
