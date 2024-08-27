@@ -53,7 +53,7 @@ def get_semantic_search_result(
             assert start not in flags and end not in flags, f"{start}, {end}"
             flags += list(range(start, end))
             numpy_files.append([start, numpy_file])
-        numpy_files = sorted(numpy_files, key=lambda x: x[0])[::-1]
+        numpy_files = sorted(numpy_files, key=lambda x: x[0])
         embedding = []
         for _, numpy_file in numpy_files:
             embedding.append(np_load(numpy_file))
