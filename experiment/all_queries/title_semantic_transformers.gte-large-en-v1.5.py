@@ -10,7 +10,7 @@ from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_fr
 model = "Alibaba-NLP/gte-large-en-v1.5"
 batch_size_query = 2048
 batch_size_index = 64
-model_kwargs = {"torch_dtype": torch.float16}
+model_kwargs = None
 prompt_name_index = None
 prompt_prefix_index = None
 prompt_suffix_index = None

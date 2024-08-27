@@ -8,8 +8,8 @@ from pse.util import get_semantic_search_result
 from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_from_hf
 
 model = "sentence-transformers/all-MiniLM-L6-v2"
-batch_size_query = 8192
-batch_size_index = 256
+batch_size_query = 16384
+batch_size_index = 1024
 model_kwargs = None
 prompt_name_index = None
 prompt_prefix_index = None

@@ -1,3 +1,4 @@
+# DONE
 # https://huggingface.co/spaces/mteb/leaderboard
 import os
 import json
@@ -10,13 +11,13 @@ from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_fr
 model = "dunzhang/stella_en_1.5B_v5"
 batch_size_query = 1024
 batch_size_index = 8
+model_kwargs = None
 prompt_name_query = "s2p_query"
 prompt_name_index = None
 prompt_prefix_index = None
 prompt_suffix_index = None
 prompt_prefix_query = None
 prompt_suffix_query = None
-model_kwargs = None
 
 # config
 index_path = f"./experiment/all_queries/output/cache/semantic_transformers.title.{os.path.basename(model)}.index"
