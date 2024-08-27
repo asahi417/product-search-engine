@@ -9,8 +9,8 @@ from pse.util import get_semantic_search_result
 from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_from_hf
 
 model = "dunzhang/stella_en_1.5B_v5"
-batch_size_query = 1024
-batch_size_index = 8
+batch_size_query = 512
+batch_size_index = 8 * 4
 model_kwargs = None
 prompt_name_query = "s2p_query"
 prompt_name_index = None

@@ -45,10 +45,20 @@ def get_semantic_search_result(
             index2id = {int(k): v for k, v in json.load(f).items()}
         with open(f"{output_dir}/corpus.json") as f:
             corpus = json.load(f)["corpus"]
-        embedding = []
+        numpy_files = []
+        flags = []
         for numpy_file in glob(f"{output_dir}/embedding.*.npy"):
+            start, end = numpy_file.split("/embedding.")[-1].replace(".npy", "").split("-")
+            start, end = int(start), int(end)
+            assert start not in flags and end not in flags
+            flags += list(range(start, end))
+            numpy_files.append([start, numpy_file])
+        numpy_files = sorted(numpy_files, key=lambda x: x[0])[::-1]
+        embedding = []
+        for _, numpy_file in numpy_files:
             embedding.append(np_load(numpy_file))
         embedding = torch.as_tensor(np.concatenate(embedding))
+        assert len(embedding) == len(index2id) == len(corpus), f"{len(embedding)}, {len(index2id)}, {len(corpus)}"
         return index2id, corpus, embedding
 
     logger = get_logger(__name__)
