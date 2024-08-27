@@ -10,7 +10,7 @@ from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_fr
 
 model = "dunzhang/stella_en_400M_v5"
 batch_size_query = 4096
-batch_size_index = 128 * 4
+batch_size_index = 128 * 8
 model_kwargs = None
 prompt_name_query = "s2p_query"
 prompt_name_index = None
