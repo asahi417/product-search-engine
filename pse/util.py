@@ -50,7 +50,7 @@ def get_semantic_search_result(
         for numpy_file in glob(f"{output_dir}/embedding.*.npy"):
             start, end = numpy_file.split("/embedding.")[-1].replace(".npy", "").split("-")
             start, end = int(start), int(end)
-            assert start not in flags and end not in flags
+            assert start not in flags and end not in flags, f"{start}, {end}, \n{flags}"
             flags += list(range(start, end))
             numpy_files.append([start, numpy_file])
         numpy_files = sorted(numpy_files, key=lambda x: x[0])[::-1]
