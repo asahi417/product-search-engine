@@ -1,4 +1,4 @@
-# DONE
+# TODO
 # https://huggingface.co/spaces/mteb/leaderboard
 import os
 import json
@@ -36,7 +36,7 @@ if not os.path.exists(result_path):
         index_chunk=batch_size_index * 20,
         query_chunk=batch_size_query * 20
     )
-    corpus, index2id = get_corpus_from_hf()
+    corpus, index2id = get_corpus_from_hf(dataset_column_names=["product_title"])
     pipe.encode_document(
         corpus=corpus,
         index2id=index2id,
