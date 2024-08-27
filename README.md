@@ -10,6 +10,7 @@ pip install -e .
 ```shell
 pip install wheel
 pip install flash-attn --no-build-isolation
+pip install xformers
 ```
 
 ## Usage

@@ -8,15 +8,15 @@ from pse.util import get_semantic_search_result
 from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_from_hf
 
 model = "dunzhang/stella_en_1.5B_v5"
-batch_size_query = 512
+batch_size_query = 1024
 batch_size_index = 8
 prompt_name_query = "s2p_query"
-model_kwargs = {"device_map": "balanced", "torch_dtype": torch.float16}
 prompt_name_index = None
 prompt_prefix_index = None
 prompt_suffix_index = None
 prompt_prefix_query = None
 prompt_suffix_query = None
+model_kwargs = None
 
 # config
 index_path = f"./experiment/all_queries/output/cache/semantic_transformers.title.{os.path.basename(model)}.index"
@@ -54,11 +54,11 @@ if not os.path.exists(result_path):
     #     prompt_prefix=prompt_prefix_query,
     #     prompt_suffix=prompt_suffix_query
     # )
-    # result = get_semantic_search_result(
-    #     index_path=index_path,
-    #     query_path=query_path,
-    #     k=64
-    # )
+    result = get_semantic_search_result(
+        index_path=index_path,
+        query_path=query_path,
+        k=64
+    )
     with open(result_path, "w") as f:
         json.dump(result, f)
 

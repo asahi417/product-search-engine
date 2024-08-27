@@ -1,4 +1,3 @@
-# RUNNING ON p3_2.2b
 # https://huggingface.co/spaces/mteb/leaderboard
 import os
 import json
@@ -8,14 +7,14 @@ from pse.search_semantic import SemanticSearchTransformers
 from pse.util import get_semantic_search_result
 from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_from_hf
 
-model = "dunzhang/stella_en_1.5B_v5"
-batch_size_query = 512
-batch_size_index = 8
+model = "sentence-transformers/all-MiniLM-L6-v2"
+batch_size_query = 8192
+batch_size_index = 256
 model_kwargs = None
-prompt_name_query = "s2p_query"
 prompt_name_index = None
 prompt_prefix_index = None
 prompt_suffix_index = None
+prompt_name_query = None
 prompt_prefix_query = None
 prompt_suffix_query = None
 
@@ -76,9 +75,8 @@ for k, v in tqdm(search_result.items()):
             labeled_search[k].append({"id": hit["id"], "label": labels[k][hit["id"]], "ranking": rank + 1, "score": hit["score"]})
         else:
             labeled_search[k].append({"id": hit["id"], "label": "None", "ranking": rank + 1, "score": hit["score"]})
-
     for product_id, label in labels[k].items():
         if product_id not in labeled_search[k]:
-            labeled_search[k].append({"id": product_id, "label": label, "ranking": -100, "score": -100})
+            labeled_search[k].append({"id": product_id, "label": label, "ranking": -100, "score": 0})
 with open(result_label_path, "w") as f:
     json.dump(labeled_search, f)
