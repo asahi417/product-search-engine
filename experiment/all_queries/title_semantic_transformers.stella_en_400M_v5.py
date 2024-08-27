@@ -1,4 +1,4 @@
-# p3.8 0
+# p3.8 0: waiting for query embedding
 # https://huggingface.co/spaces/mteb/leaderboard
 import os
 import json
