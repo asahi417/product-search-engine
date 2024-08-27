@@ -1,4 +1,4 @@
-# p3.8 0
+# DONE
 # https://huggingface.co/spaces/mteb/leaderboard
 import os
 import json

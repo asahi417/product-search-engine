@@ -1,4 +1,3 @@
-# DONE
 import os
 import json
 from tqdm import tqdm
