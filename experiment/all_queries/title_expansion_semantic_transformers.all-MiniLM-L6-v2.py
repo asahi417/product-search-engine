@@ -1,30 +1,34 @@
-# DONE waiting for query to be done
 # https://huggingface.co/spaces/mteb/leaderboard
 import os
 import json
 from tqdm import tqdm
-import torch
 from pse.search_semantic import SemanticSearchTransformers
 from pse.util import get_semantic_search_result
 from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_from_hf
 
-model = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
-batch_size_query = 256
-batch_size_index = 4 * 4
-prompt_name_query = "query"
+model = "sentence-transformers/all-MiniLM-L6-v2"
+batch_size_query = 4096
+batch_size_index = 1024
 model_kwargs = None
 prompt_name_index = None
 prompt_prefix_index = None
 prompt_suffix_index = None
+prompt_name_query = None
 prompt_prefix_query = None
 prompt_suffix_query = None
 
 # config
-index_path = f"./experiment/all_queries/output/cache/semantic_transformers.title.{os.path.basename(model)}.index"
+expansion_file = "expansion_1"
+index_path = f"./experiment/all_queries/output/cache/semantic_transformers.title_{expansion_file}.{os.path.basename(model)}.index"
 query_path = f"./experiment/all_queries/output/cache/semantic_transformers.{os.path.basename(model)}.query"
-result_path = f"./experiment/all_queries/output/result/semantic_transformers.title.{os.path.basename(model)}.json"
-result_label_path = f"./experiment/all_queries/output/result/semantic_transformers.title.{os.path.basename(model)}.label.json"
+result_path = f"./experiment/all_queries/output/result/semantic_transformers.title_{expansion_file}.{os.path.basename(model)}.json"
+result_label_path = f"./experiment/all_queries/output/result/semantic_transformers.title_{expansion_file}.{os.path.basename(model)}.label.json"
 os.makedirs(os.path.dirname(result_path), exist_ok=True)
+
+# load symptom tokens
+with open(f"./experiment/all_queries/output/expansion/{expansion_file}.json") as f:
+    expansion_dict = json.load(f)
+
 
 # run experiment
 if not os.path.exists(result_path):
@@ -38,6 +42,12 @@ if not os.path.exists(result_path):
         query_chunk=batch_size_query * 20
     )
     corpus, index2id = get_corpus_from_hf(dataset_column_names=["product_title"])
+
+    # expand document
+    id2index = {v: k for k, v in index2id.items()}
+    expansion_dict = {id2index[k]: v for k, v in expansion_dict.items()}
+    corpus = [i if n not in expansion_dict else f"{i}\n{expansion_dict[n]}" for n, i in enumerate(corpus)]
+
     pipe.encode_document(
         corpus=corpus,
         index2id=index2id,
@@ -78,6 +88,6 @@ for k, v in tqdm(search_result.items()):
             labeled_search[k].append({"id": hit["id"], "label": "None", "ranking": rank + 1, "score": hit["score"]})
     for product_id, label in labels[k].items():
         if product_id not in labeled_search[k]:
-            labeled_search[k].append({"id": product_id, "label": label, "ranking": -100, "score": -100})
+            labeled_search[k].append({"id": product_id, "label": label, "ranking": -100, "score": 0})
 with open(result_label_path, "w") as f:
     json.dump(labeled_search, f)
