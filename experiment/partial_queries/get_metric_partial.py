@@ -8,6 +8,10 @@ from pse.eval_util import calculate_metric
 root_path = "./experiment/all_queries/output/result/*.label.json"
 output = "./experiment/all_queries/output/result/all_queries.result.json"
 top_k = [8, 16, 32, 64]
+with open("./experiment/partial_queries/query_set_1.json", "w") as f:
+    query_set = json.load(f).keys()
+
+
 metric = {}
 if os.path.exists(output):
     with open(output, "r") as f:
