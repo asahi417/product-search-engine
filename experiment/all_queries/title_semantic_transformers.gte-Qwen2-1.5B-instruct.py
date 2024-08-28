@@ -1,3 +1,4 @@
+# DONE waiting for query to be done
 # https://huggingface.co/spaces/mteb/leaderboard
 import os
 import json
