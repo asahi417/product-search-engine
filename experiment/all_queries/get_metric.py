@@ -23,5 +23,5 @@ pprint(metric)
 
 with open(output, "w") as f:
     json.dump(metric, f)
-df = (pd.DataFrame(metric) * 100).round(2)
+df = (pd.DataFrame(metric) * 100).round(0)
 print(df[sorted(df.columns)].T.to_markdown())
