@@ -24,6 +24,7 @@ pprint(metric)
 with open(output, "w") as f:
     json.dump(metric, f)
 df = (pd.DataFrame(metric) * 100).round(1)
-df.columns = [i.replace("lexical_", "").replace("semantic_", "") for i in df.columns]
+df.columns = [i.replace("lexical_", "").replace("semantic_transformers.", "semantic.") for i in df.columns]
 df = df[sorted(df.columns)].T
 print(df.to_markdown())
+print(df)
