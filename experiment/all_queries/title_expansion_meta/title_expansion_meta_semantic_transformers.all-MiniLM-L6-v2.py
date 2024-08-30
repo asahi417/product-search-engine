@@ -28,8 +28,8 @@ expansion_file = "expansion_1"
 index_expansion_path = f"./experiment/all_queries/output/cache/semantic_transformers.{expansion_file}.{os.path.basename(model)}.index"
 index_path = f"./experiment/all_queries/output/cache/semantic_transformers.title.{os.path.basename(model)}.index"
 query_path = f"./experiment/all_queries/output/cache/semantic_transformers.{os.path.basename(model)}.query"
-result_path = f"./experiment/all_queries/output/result/semantic_transformers.title_{expansion_file}.{os.path.basename(model)}.json"
-result_label_path = f"./experiment/all_queries/output/result/semantic_transformers.title_{expansion_file}.{os.path.basename(model)}.label.json"
+result_path = f"./experiment/all_queries/output/result/semantic_transformers.title_{expansion_file}_meta.{os.path.basename(model)}.json"
+result_label_path = f"./experiment/all_queries/output/result/semantic_transformers.title_{expansion_file}_meta.{os.path.basename(model)}.label.json"
 os.makedirs(os.path.dirname(result_path), exist_ok=True)
 
 # load symptom tokens
