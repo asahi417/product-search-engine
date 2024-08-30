@@ -26,14 +26,18 @@ class SemanticSearchTransformers:
     def __init__(self,
                  index_path: str,
                  query_path: str,
+                 index_expansion_path: Optional[str] = None,
                  index_chunk: int = 10_000,
                  query_chunk: int = 10_000,
+                 index_expansion_chunk: int = 10_000,
                  model: str = "all-MiniLM-L6-v2",
                  model_kwargs: Optional[Dict[str, Any]] = None):
         self.index_path = index_path
         self.query_path = query_path
+        self.index_expansion_path = index_expansion_path
         self.index_chunk = index_chunk
         self.query_chunk = query_chunk
+        self.index_expansion_chunk = index_expansion_chunk
         self.index_index2id = None
         self.query_index2id = None
         self.index_embedding = None
@@ -108,6 +112,25 @@ class SemanticSearchTransformers:
             corpus,
             output_dir=self.query_path,
             chunk_size=self.query_chunk,
+            index2id=index2id,
+            batch_size=batch_size,
+            prompt_name=prompt_name,
+            prompt_prefix=prompt_prefix,
+            prompt_suffix=prompt_suffix
+        )
+
+    def encode_expansion(self,
+                         corpus: List[str],
+                         index2id: Optional[Dict[int, str]] = None,
+                         batch_size: int = 64,
+                         prompt_name: Optional[str] = None,
+                         prompt_prefix: Optional[str] = None,
+                         prompt_suffix: Optional[str] = None) -> None:
+        logger.info(f"generate embedding for document: {len(corpus)}")
+        self.encode(
+            corpus,
+            output_dir=self.index_expansion_path,
+            chunk_size=self.index_expansion_chunk,
             index2id=index2id,
             batch_size=batch_size,
             prompt_name=prompt_name,
