@@ -9,16 +9,8 @@ from pse.util import get_semantic_search_result
 from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_from_hf
 
 model = "sentence-transformers/all-MiniLM-L6-v2"
-batch_size_query = 4096
-batch_size_index = 1024
 batch_size_index_expansion = 4096
 model_kwargs = None
-prompt_name_index = None
-prompt_prefix_index = None
-prompt_suffix_index = None
-prompt_name_query = None
-prompt_prefix_query = None
-prompt_suffix_query = None
 prompt_name_index_expansion = None
 prompt_prefix_index_expansion = None
 prompt_suffix_index_expansion = None
@@ -50,8 +42,6 @@ if not os.path.exists(result_path):
         index_expansion_path=index_expansion_path,
         model=model,
         model_kwargs=model_kwargs,
-        index_chunk=batch_size_index * 20,
-        query_chunk=batch_size_query * 20,
         index_expansion_chunk=batch_size_index_expansion * 20
     )
     pipe.encode_expansion(
@@ -62,23 +52,7 @@ if not os.path.exists(result_path):
         prompt_prefix=prompt_prefix_index_expansion,
         prompt_suffix=prompt_suffix_index_expansion
     )
-    # pipe.encode_document(
-    #     corpus=corpus,
-    #     index2id=index2id,
-    #     batch_size=batch_size_index,
-    #     prompt_name=prompt_name_index,
-    #     prompt_prefix=prompt_prefix_index,
-    #     prompt_suffix=prompt_suffix_index
-    # )
-    # corpus, index2id = get_query_from_hf()
-    # pipe.encode_query(
-    #     corpus=corpus,
-    #     index2id=index2id,
-    #     batch_size=batch_size_query,
-    #     prompt_name=prompt_name_query,
-    #     prompt_prefix=prompt_prefix_query,
-    #     prompt_suffix=prompt_suffix_query
-    # )
+
 #     result = get_semantic_search_result(
 #         index_path=index_path,
 #         query_path=query_path,

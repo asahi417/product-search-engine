@@ -2,7 +2,7 @@ import logging
 import json
 from gc import collect
 from glob import glob
-from typing import List, Dict, Union
+from typing import List, Dict, Union, Optional
 
 import numpy as np
 import torch
@@ -37,6 +37,7 @@ def get_logger(name: str) -> logging.Logger:
 def get_semantic_search_result(
         query_path: str,
         index_path: str,
+        index_expansion_path: Optional[str] = None,
         k: int = 16,
         query_chunk_size: int = 400,
         corpus_chunk_size: int = 400000) -> Dict[str, List[Dict[str, Union[str, float]]]]:
@@ -63,11 +64,14 @@ def get_semantic_search_result(
 
     logger = get_logger(__name__)
     query_index2id, query_corpus, query_embedding = load_index(query_path)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    logger.info(f"device: {device}")
     logger.info(f"load query: {query_embedding.shape}")
     index_index2id, index_corpus, index_embedding = load_index(index_path)
     logger.info(f"load document: {index_embedding.shape}")
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    logger.info(f"device: {device}")
+    if index_expansion_path:
+        index_expansion_index2id, index_expansion_corpus, index_expansion_embedding = load_index(index_expansion_path)
+        logger.info(f"load document: {index_expansion_embedding.shape}")
     search_result = semantic_search(
         query_embedding.to(device),
         index_embedding.to(device),
