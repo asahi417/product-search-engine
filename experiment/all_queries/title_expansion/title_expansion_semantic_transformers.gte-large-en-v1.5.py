@@ -3,21 +3,16 @@
 import os
 import json
 from tqdm import tqdm
-import torch
 from pse.search_semantic import SemanticSearchTransformers
 from pse.util import get_semantic_search_result
-from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_from_hf
+from pse.dataset_util import get_corpus_from_hf, get_label_from_hf
 
 model = "Alibaba-NLP/gte-large-en-v1.5"
-batch_size_query = 1024
 batch_size_index = 32 * 2
 model_kwargs = None
 prompt_name_index = None
 prompt_prefix_index = None
 prompt_suffix_index = None
-prompt_name_query = None
-prompt_prefix_query = None
-prompt_suffix_query = None
 
 # config
 expansion_file = "expansion_1"
@@ -32,6 +27,7 @@ with open(f"./experiment/all_queries/output/expansion/{expansion_file}.json") as
     expansion_dict = json.load(f)
 
 
+
 # run experiment
 if not os.path.exists(result_path):
     # search engine
@@ -41,7 +37,6 @@ if not os.path.exists(result_path):
         model=model,
         model_kwargs=model_kwargs,
         index_chunk=batch_size_index * 20,
-        query_chunk=batch_size_query * 20
     )
     corpus, index2id = get_corpus_from_hf(dataset_column_names=["product_title"])
 
@@ -58,15 +53,6 @@ if not os.path.exists(result_path):
         prompt_prefix=prompt_prefix_index,
         prompt_suffix=prompt_suffix_index
     )
-    # corpus, index2id = get_query_from_hf()
-    # pipe.encode_query(
-    #     corpus=corpus,
-    #     index2id=index2id,
-    #     batch_size=batch_size_query,
-    #     prompt_name=prompt_name_query,
-    #     prompt_prefix=prompt_prefix_query,
-    #     prompt_suffix=prompt_suffix_query
-    # )
     result = get_semantic_search_result(
         index_path=index_path,
         query_path=query_path,
