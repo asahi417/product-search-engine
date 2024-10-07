@@ -1,4 +1,3 @@
-# TODO
 # https://huggingface.co/spaces/mteb/leaderboard
 import os
 import json
@@ -8,15 +7,11 @@ from pse.util import get_semantic_search_result
 from pse.dataset_util import get_corpus_from_hf, get_label_from_hf
 
 model = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
-batch_size_query = 256
 batch_size_index = 4 * 2
-prompt_name_query = "query"
 model_kwargs = None
 prompt_name_index = None
 prompt_prefix_index = None
 prompt_suffix_index = None
-prompt_prefix_query = None
-prompt_suffix_query = None
 
 # config
 expansion_file = "expansion_1"
