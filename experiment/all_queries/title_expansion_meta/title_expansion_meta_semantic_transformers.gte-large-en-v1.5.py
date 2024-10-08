@@ -10,9 +10,9 @@ from pse.dataset_util import get_corpus_from_hf, get_label_from_hf
 model = "Alibaba-NLP/gte-large-en-v1.5"
 batch_size_index_expansion = 64
 model_kwargs = None
-prompt_name_index = None
-prompt_prefix_index = None
-prompt_suffix_index = None
+prompt_name_index_expansion = None
+prompt_prefix_index_expansion = None
+prompt_suffix_index_expansion = None
 
 # config
 expansion_file = "expansion_1"
