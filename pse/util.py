@@ -1,3 +1,4 @@
+import os
 import logging
 import json
 from gc import collect
@@ -38,6 +39,7 @@ def get_semantic_search_result(
         query_path: str,
         index_path: str,
         index_expansion_path: Optional[str] = None,
+        inbdex_meta_embedding_path: Optional[str] = None,
         k: int = 16,
         query_chunk_size: int = 400,
         corpus_chunk_size: int = 400000) -> Dict[str, List[Dict[str, Union[str, float]]]]:
@@ -70,17 +72,39 @@ def get_semantic_search_result(
     index_index2id, index_corpus, index_embedding = load_index(index_path)
     logger.info(f"load document: {index_embedding.shape}")
     if index_expansion_path:
-        index_expansion_index2id, index_expansion_corpus, index_expansion_embedding = load_index(index_expansion_path)
-        logger.info(f"load document: {index_expansion_embedding.shape}")
-        index_expansion_id2index = {v: k for k, v in index_expansion_index2id.items()}
-        index_id2index = {v: k for k, v in index_index2id.items()}
-        index_group = {}
-        for k, v in index_expansion_index2id.items():
-            corpus_id, _ = v.split(".")
-            if corpus_id not in index_group:
-                index_group[corpus_id] = [index_expansion_id2index[v]]
-            else:
-                index_group[corpus_id] += [index_expansion_id2index[v]]
+        assert inbdex_meta_embedding_path
+        if os.path.exists(f"{inbdex_meta_embedding_path}/embedding.npy"):
+            _, _, index_embedding = load_index(inbdex_meta_embedding_path)
+        else:
+            index_expansion_index2id, index_expansion_corpus, index_expansion_embedding = load_index(index_expansion_path)
+            logger.info(f"load document: {index_expansion_embedding.shape}")
+            index_expansion_id2index = {v: k for k, v in index_expansion_index2id.items()}
+            index_id2index = {v: k for k, v in index_index2id.items()}
+            index_group = {}
+            for k, v in index_expansion_index2id.items():
+                corpus_id, _ = v.split(".")
+                if index_id2index[corpus_id] not in index_group:
+                    index_group[index_id2index[corpus_id]] = [index_expansion_id2index[v]]
+                else:
+                    index_group[index_id2index[corpus_id]] += [index_expansion_id2index[v]]
+
+            index_meta_embedding = []
+            for index_key, expansion_keys in index_group.items():
+                v_index = index_embedding[index_key].unsqueeze(0).to(device)
+                v_expansions = torch.stack([index_expansion_embedding[i] for i in expansion_keys]).to(device)
+                weight = torch.nn.functional.softmax(torch.inner(v_index, v_expansions))
+                v_expansion = torch.mm(weight, v_expansions)
+                v_meta = (v_index + v_expansion)/2
+                index_meta_embedding.append(v_meta.cpu().numpy())
+            index_embedding = np.concatenate(index_meta_embedding)
+
+            # save
+            os.makedirs(inbdex_meta_embedding_path, exist_ok=True)
+            with open(f"{inbdex_meta_embedding_path}/corpus.json", "w") as f:
+                json.dump({"corpus": index_corpus}, f)
+            with open(f"{inbdex_meta_embedding_path}/index2id.json", "w") as f:
+                json.dump(index_index2id, f)
+            np_save(index_embedding, f"{inbdex_meta_embedding_path}/embedding.npy")
 
     search_result = semantic_search(
         query_embedding.to(device),
