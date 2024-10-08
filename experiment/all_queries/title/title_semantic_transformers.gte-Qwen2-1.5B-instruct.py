@@ -31,14 +31,14 @@ if not os.path.exists(result_path):
         index_chunk=batch_size_index * 20,
     )
     corpus, index2id = get_corpus_from_hf(dataset_column_names=["product_title"])
-    # pipe.encode_document(
-    #     corpus=corpus,
-    #     index2id=index2id,
-    #     batch_size=batch_size_index,
-    #     prompt_name=prompt_name_index,
-    #     prompt_prefix=prompt_prefix_index,
-    #     prompt_suffix=prompt_suffix_index
-    # )
+    pipe.encode_document(
+        corpus=corpus,
+        index2id=index2id,
+        batch_size=batch_size_index,
+        prompt_name=prompt_name_index,
+        prompt_prefix=prompt_prefix_index,
+        prompt_suffix=prompt_suffix_index
+    )
     result = get_semantic_search_result(
         index_path=index_path,
         query_path=query_path,

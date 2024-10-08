@@ -52,30 +52,3 @@ if not os.path.exists(result_path):
         prompt_prefix=prompt_prefix_index_expansion,
         prompt_suffix=prompt_suffix_index_expansion
     )
-
-#     result = get_semantic_search_result(
-#         index_path=index_path,
-#         query_path=query_path,
-#         k=64
-#     )
-#     with open(result_path, "w") as f:
-#         json.dump(result, f)
-#
-# with open(result_path) as f:
-#     search_result = json.load(f)
-#
-# # compute metric
-# labels = get_label_from_hf()
-# labeled_search = {}
-# for k, v in tqdm(search_result.items()):
-#     labeled_search[k] = []
-#     for rank, hit in enumerate(v):
-#         if hit["id"] in labels[k]:
-#             labeled_search[k].append({"id": hit["id"], "label": labels[k][hit["id"]], "ranking": rank + 1, "score": hit["score"]})
-#         else:
-#             labeled_search[k].append({"id": hit["id"], "label": "None", "ranking": rank + 1, "score": hit["score"]})
-#     for product_id, label in labels[k].items():
-#         if product_id not in labeled_search[k]:
-#             labeled_search[k].append({"id": product_id, "label": label, "ranking": -100, "score": 0})
-# with open(result_label_path, "w") as f:
-#     json.dump(labeled_search, f)
