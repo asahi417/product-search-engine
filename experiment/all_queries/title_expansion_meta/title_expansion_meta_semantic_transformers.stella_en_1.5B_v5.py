@@ -8,7 +8,7 @@ from pse.util import get_semantic_search_result
 from pse.dataset_util import get_corpus_from_hf, get_label_from_hf
 
 model = "dunzhang/stella_en_1.5B_v5"
-batch_size_index_expansion = 4096
+batch_size_index_expansion = 64
 model_kwargs = None
 prompt_name_index_expansion = "s2p_query"
 prompt_prefix_index_expansion = None
@@ -30,7 +30,6 @@ with open(f"./experiment/all_queries/output/expansion/{expansion_file}.json") as
     ids = list(chain(*[[f"{x}.{n}" for n in range(len(y))] for x, y in zip(expansion_dict.keys(), corpus)]))
     corpus = list(chain(*corpus))
     index2id = {n: str(i) for n, i in enumerate(ids)}
-
 
 # run experiment
 if not os.path.exists(result_path):

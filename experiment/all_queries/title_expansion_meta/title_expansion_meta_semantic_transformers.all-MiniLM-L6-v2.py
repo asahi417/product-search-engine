@@ -32,7 +32,6 @@ with open(f"./experiment/all_queries/output/expansion/{expansion_file}.json") as
     corpus = list(chain(*corpus))
     index2id = {n: str(i) for n, i in enumerate(ids)}
 
-
 # run experiment
 if not os.path.exists(result_path):
     # search engine
