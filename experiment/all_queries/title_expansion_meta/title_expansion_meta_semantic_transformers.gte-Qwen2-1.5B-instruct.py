@@ -10,7 +10,7 @@ from pse.dataset_util import get_corpus_from_hf, get_label_from_hf
 model = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
 batch_size_index_expansion = 64
 model_kwargs = None
-prompt_name_index_expansion = None
+prompt_name_index_expansion = "query"
 prompt_prefix_index_expansion = None
 prompt_suffix_index_expansion = None
 

@@ -72,13 +72,15 @@ def get_semantic_search_result(
     if index_expansion_path:
         index_expansion_index2id, index_expansion_corpus, index_expansion_embedding = load_index(index_expansion_path)
         logger.info(f"load document: {index_expansion_embedding.shape}")
+        index_expansion_id2index = {v: k for k, v in index_expansion_index2id.items()}
+        index_id2index = {v: k for k, v in index_index2id.items()}
         index_group = {}
         for k, v in index_expansion_index2id.items():
-            corpus_id, n = k.split(".")
-            if corpus_id in index_group:
-                index_group[corpus_id] = {int(n): v}
+            corpus_id, _ = v.split(".")
+            if corpus_id not in index_group:
+                index_group[corpus_id] = [index_expansion_id2index[v]]
             else:
-                index_group[corpus_id][int(n)] = v
+                index_group[corpus_id] += [index_expansion_id2index[v]]
 
     search_result = semantic_search(
         query_embedding.to(device),
@@ -98,3 +100,4 @@ def get_semantic_search_result(
             })
         full_output[query_index2id[n]] = output
     return full_output
+
