@@ -8,7 +8,7 @@ from pse.util import get_semantic_search_result
 from pse.dataset_util import get_corpus_from_hf, get_label_from_hf
 
 model = "Alibaba-NLP/gte-Qwen2-1.5B-instruct"
-batch_size_index = 64
+batch_size_index_expansion = 64
 model_kwargs = None
 prompt_name_index = None
 prompt_prefix_index = None
