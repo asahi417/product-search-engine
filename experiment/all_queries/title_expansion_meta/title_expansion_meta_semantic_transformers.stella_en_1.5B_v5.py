@@ -56,7 +56,9 @@ if not os.path.exists(result_path):
         query_path=query_path,
         index_expansion_path=index_expansion_path,
         index_meta_embedding_path=index_meta_embedding_path,
-        k=64
+        k=64,
+        query_chunk_size=200,
+        corpus_chunk_size=200000
     )
     with open(result_path, "w") as f:
         json.dump(result, f)
