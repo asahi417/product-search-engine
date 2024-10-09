@@ -97,7 +97,7 @@ def get_semantic_search_result(
                     v_meta = (v_index + v_expansion)/2
                     index_meta_embedding.append(v_meta.cpu().numpy())
                 else:
-                    index_meta_embedding.append(index_embedding[index_key].cpu().numpy())
+                    index_meta_embedding.append(index_embedding[index_key].unsqueeze(0).cpu().numpy())
             index_embedding = np.concatenate(index_meta_embedding)
             os.makedirs(index_meta_embedding_path, exist_ok=True)
             np_save(index_embedding, f"{index_meta_embedding_path}/embedding.npy")
