@@ -73,9 +73,7 @@ def get_semantic_search_result(
     logger.info(f"load document: {index_embedding.shape}")
     if index_expansion_path:
         assert inbdex_meta_embedding_path
-        if os.path.exists(f"{inbdex_meta_embedding_path}/embedding.npy"):
-            _, _, index_embedding = load_index(inbdex_meta_embedding_path)
-        else:
+        if not os.path.exists(f"{inbdex_meta_embedding_path}/embedding.npy"):
             index_expansion_index2id, index_expansion_corpus, index_expansion_embedding = load_index(index_expansion_path)
             logger.info(f"load document: {index_expansion_embedding.shape}")
             index_expansion_id2index = {v: k for k, v in index_expansion_index2id.items()}
@@ -105,7 +103,7 @@ def get_semantic_search_result(
             with open(f"{inbdex_meta_embedding_path}/index2id.json", "w") as f:
                 json.dump(index_index2id, f)
             np_save(index_embedding, f"{inbdex_meta_embedding_path}/embedding.npy")
-
+        _, _, index_embedding = load_index(inbdex_meta_embedding_path)
     search_result = semantic_search(
         query_embedding.to(device),
         index_embedding.to(device),
