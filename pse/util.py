@@ -123,8 +123,7 @@ def get_semantic_search_result(
                             index_meta_embedding.append(v_meta.cpu().numpy())
                         else:
                             index_meta_embedding.append(index_embedding[index_key].unsqueeze(0).cpu().numpy())
-                    index_embedding = np.concatenate(index_meta_embedding)
-                    np_save(index_embedding, filename)
+                    np_save(np.concatenate(index_meta_embedding), filename)
 
         if os.path.exists(f"{index_meta_embedding_path}/embedding.npy"):
             index_embedding = torch.as_tensor(np_load(f"{index_meta_embedding_path}/embedding.npy"))
