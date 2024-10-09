@@ -57,7 +57,7 @@ if not os.path.exists(result_path):
         index_expansion_path=index_expansion_path,
         index_meta_embedding_path=index_meta_embedding_path,
         k=64,
-        query_chunk_size=100,
+        query_chunk_size=4,
         corpus_chunk_size=100000
     )
     with open(result_path, "w") as f:
