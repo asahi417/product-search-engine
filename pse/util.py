@@ -103,7 +103,7 @@ def get_semantic_search_result(
             with open(f"{inbdex_meta_embedding_path}/index2id.json", "w") as f:
                 json.dump(index_index2id, f)
             np_save(index_embedding, f"{inbdex_meta_embedding_path}/embedding.npy")
-        _, _, index_embedding = load_index(inbdex_meta_embedding_path)
+        index_embedding = torch.as_tensor(np_load(f"{inbdex_meta_embedding_path}/embedding.npy"))
     search_result = semantic_search(
         query_embedding.to(device),
         index_embedding.to(device),
