@@ -55,7 +55,7 @@ if not os.path.exists(result_path):
         index_path=index_path,
         query_path=query_path,
         index_expansion_path=index_expansion_path,
-        inbdex_meta_embedding_path=index_meta_embedding_path,
+        index_meta_embedding_path=index_meta_embedding_path,
         k=64
     )
     with open(result_path, "w") as f:
