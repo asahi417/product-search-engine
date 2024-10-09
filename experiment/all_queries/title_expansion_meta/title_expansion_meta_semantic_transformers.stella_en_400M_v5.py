@@ -60,7 +60,7 @@ if not os.path.exists(result_path):
         k=64,
         query_chunk_size=100,
         corpus_chunk_size=200000,
-        chunk_size_save=10000
+        # chunk_size_save=10000
     )
     with open(result_path, "w") as f:
         json.dump(result, f)
