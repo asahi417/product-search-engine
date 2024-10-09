@@ -58,7 +58,8 @@ if not os.path.exists(result_path):
         index_meta_embedding_path=index_meta_embedding_path,
         k=64,
         query_chunk_size=100,
-        corpus_chunk_size=100000
+        corpus_chunk_size=100000,
+        chunk_size_save=10000
     )
     with open(result_path, "w") as f:
         json.dump(result, f)

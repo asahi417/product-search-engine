@@ -4,6 +4,7 @@ import json
 from gc import collect
 from glob import glob
 from typing import List, Dict, Union, Optional
+from tqdm import tqdm
 
 import numpy as np
 import torch
@@ -41,6 +42,7 @@ def get_semantic_search_result(
         index_expansion_path: Optional[str] = None,
         index_meta_embedding_path: Optional[str] = None,
         k: int = 16,
+        chunk_size_save: Optional[int] = None,
         query_chunk_size: int = 400,
         corpus_chunk_size: int = 400000) -> Dict[str, List[Dict[str, Union[str, float]]]]:
     def load_index(output_dir) -> (Dict[int, str], List[str], torch.Tensor):
@@ -73,9 +75,9 @@ def get_semantic_search_result(
     logger.info(f"load document: {index_embedding.shape}")
     if index_expansion_path:
         assert index_meta_embedding_path
-        if not os.path.exists(f"{index_meta_embedding_path}/embedding.npy"):
+        if not os.path.exists(index_meta_embedding_path):
             index_expansion_index2id, index_expansion_corpus, index_expansion_embedding = load_index(index_expansion_path)
-            logger.info(f"load document: {index_expansion_embedding.shape}")
+            logger.info(f"load expansion: {index_expansion_embedding.shape}")
             index_expansion_id2index = {v: k for k, v in index_expansion_index2id.items()}
             index_id2index = {v: k for k, v in index_index2id.items()}
             index_group = {}
@@ -86,23 +88,60 @@ def get_semantic_search_result(
                 else:
                     index_group[index_id2index[corpus_id]] += [index_expansion_id2index[v]]
 
-            index_meta_embedding = []
-            for index_key in sorted(index_index2id.keys()):
-                if index_key in index_group:
-                    expansion_keys = index_group[index_key]
-                    v_index = index_embedding[index_key].unsqueeze(0).to(device)
-                    v_expansions = torch.stack([index_expansion_embedding[i] for i in expansion_keys]).to(device)
-                    weight = torch.nn.functional.softmax(torch.inner(v_index, v_expansions))
-                    v_expansion = torch.mm(weight, v_expansions)
-                    v_meta = (v_index + v_expansion)/2
-                    index_meta_embedding.append(v_meta.cpu().numpy())
-                else:
-                    index_meta_embedding.append(index_embedding[index_key].unsqueeze(0).cpu().numpy())
-            index_embedding = np.concatenate(index_meta_embedding)
             os.makedirs(index_meta_embedding_path, exist_ok=True)
-            np_save(index_embedding, f"{index_meta_embedding_path}/embedding.npy")
+            if not chunk_size_save:
+                index_meta_embedding = []
+                for index_key in tqdm(sorted(index_index2id.keys()), total=len(index_index2id)):
+                    if index_key in index_group:
+                        expansion_keys = index_group[index_key]
+                        v_index = index_embedding[index_key].unsqueeze(0).to(device)
+                        v_expansions = torch.stack([index_expansion_embedding[i] for i in expansion_keys]).to(device)
+                        weight = torch.nn.functional.softmax(torch.inner(v_index, v_expansions))
+                        v_expansion = torch.mm(weight, v_expansions)
+                        v_meta = (v_index + v_expansion)/2
+                        index_meta_embedding.append(v_meta.cpu().numpy())
+                    else:
+                        index_meta_embedding.append(index_embedding[index_key].unsqueeze(0).cpu().numpy())
+                index_embedding = np.concatenate(index_meta_embedding)
+                os.makedirs(index_meta_embedding_path, exist_ok=True)
+                np_save(index_embedding, f"{index_meta_embedding_path}/embedding.npy")
+            else:
+                indices = sorted(index_index2id.keys())
+                for start in tqdm(range(0, len(indices), chunk_size_save)):
+                    end = min(start + chunk_size_save, len(indices))
+                    filename = f"{index_meta_embedding_path}/embedding.{start}-{end}.npy"
+                    index_meta_embedding = []
+                    for i in range(start, end):
+                        index_key = indices[i]
+                        if index_key in index_group:
+                            expansion_keys = index_group[index_key]
+                            v_index = index_embedding[index_key].unsqueeze(0).to(device)
+                            v_expansions = torch.stack([index_expansion_embedding[i] for i in expansion_keys]).to(device)
+                            weight = torch.nn.functional.softmax(torch.inner(v_index, v_expansions))
+                            v_expansion = torch.mm(weight, v_expansions)
+                            v_meta = (v_index + v_expansion)/2
+                            index_meta_embedding.append(v_meta.cpu().numpy())
+                        else:
+                            index_meta_embedding.append(index_embedding[index_key].unsqueeze(0).cpu().numpy())
+                    index_embedding = np.concatenate(index_meta_embedding)
+                    np_save(index_embedding, filename)
 
-        index_embedding = torch.as_tensor(np_load(f"{index_meta_embedding_path}/embedding.npy"))
+        if os.path.exists(f"{index_meta_embedding_path}/embedding.npy"):
+            index_embedding = torch.as_tensor(np_load(f"{index_meta_embedding_path}/embedding.npy"))
+        else:
+            numpy_files = []
+            flags = []
+            for numpy_file in glob(f"{index_meta_embedding_path}/embedding.*.npy"):
+                start, end = numpy_file.split("/embedding.")[-1].replace(".npy", "").split("-")
+                start, end = int(start), int(end)
+                assert start not in flags and end - 1 not in flags, f"{start}, {end - 1}"
+                flags += list(range(start, end))
+                numpy_files.append([start, numpy_file])
+            numpy_files = sorted(numpy_files, key=lambda x: x[0])
+            embedding = []
+            for _, numpy_file in numpy_files:
+                embedding.append(np_load(numpy_file))
+            index_embedding = torch.as_tensor(np.concatenate(embedding))
         logger.info(f"load meta embedding: {index_embedding.shape}")
     search_result = semantic_search(
         query_embedding.to(device),
