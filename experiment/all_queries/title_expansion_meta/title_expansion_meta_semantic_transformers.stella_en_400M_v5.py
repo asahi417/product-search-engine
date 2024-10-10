@@ -58,8 +58,8 @@ if not os.path.exists(result_path):
         index_expansion_path=index_expansion_path,
         index_meta_embedding_path=index_meta_embedding_path,
         k=64,
-        query_chunk_size=10000,
-        corpus_chunk_size=10000
+        query_chunk_size=5000,
+        corpus_chunk_size=5000
     )
     with open(result_path, "w") as f:
         json.dump(result, f)
