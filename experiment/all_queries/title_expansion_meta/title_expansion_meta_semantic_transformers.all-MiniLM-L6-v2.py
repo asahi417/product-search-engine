@@ -44,14 +44,15 @@ if not os.path.exists(result_path):
         model_kwargs=model_kwargs,
         index_expansion_chunk=batch_size_index_expansion * 20
     )
-    pipe.encode_expansion(
-        corpus=corpus,
-        index2id=index2id,
-        batch_size=batch_size_index_expansion,
-        prompt_name=prompt_name_index_expansion,
-        prompt_prefix=prompt_prefix_index_expansion,
-        prompt_suffix=prompt_suffix_index_expansion
-    )
+    if not os.path.exists(index_meta_embedding_path):
+        pipe.encode_expansion(
+            corpus=corpus,
+            index2id=index2id,
+            batch_size=batch_size_index_expansion,
+            prompt_name=prompt_name_index_expansion,
+            prompt_prefix=prompt_prefix_index_expansion,
+            prompt_suffix=prompt_suffix_index_expansion
+        )
     result = get_semantic_search_result(
         index_path=index_path,
         query_path=query_path,
