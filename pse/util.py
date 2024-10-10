@@ -112,7 +112,6 @@ def get_semantic_search_result(
     else:
         index_index2id, index_corpus, index_embedding = load_index(index_path)
         logger.info(f"load document: {index_embedding.shape}")
-    exit()
     search_result = semantic_search(
         query_embedding.to(device),
         index_embedding.to(device),
