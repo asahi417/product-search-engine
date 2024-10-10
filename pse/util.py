@@ -47,7 +47,7 @@ def get_semantic_search_result(
         corpus_chunk_size: int = 400000) -> Dict[str, List[Dict[str, Union[str, float]]]]:
     def load_index(output_dir) -> (Dict[int, str], List[str], torch.Tensor):
         with open(f"{output_dir}/index2id.json") as f:
-            index2id = {int(k): v for k, v in json.load(f).items()}
+            index2id = {int(_k): _v for _k, _v in json.load(f).items()}
         with open(f"{output_dir}/corpus.json") as f:
             corpus = json.load(f)["corpus"]
         numpy_files = []
@@ -105,7 +105,7 @@ def get_semantic_search_result(
             with open(f"{index_meta_embedding_path}/index2id.json", "w") as f:
                 json.dump(index_index2id, f)
             with open(f"{index_meta_embedding_path}/corpus.json", "w") as f:
-                json.dump(index_corpus, f)
+                json.dump({"corpus": index_corpus}, f)
 
         index_index2id, index_corpus, index_embedding = load_index(index_meta_embedding_path)
         logger.info(f"load meta embedding: {index_embedding.shape}")
