@@ -44,7 +44,8 @@ class SemanticSearchTransformers:
         self.query_embedding = None
         self.index_corpus = None
         self.query_corpus = None
-        self.embedder = SentenceTransformer(model, model_kwargs=model_kwargs, trust_remote_code=True)
+        self.embedder = None
+        # self.embedder = SentenceTransformer(model, model_kwargs=model_kwargs, trust_remote_code=True)
 
     def encode(self,
                corpus: List[str],
