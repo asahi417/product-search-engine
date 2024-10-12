@@ -44,7 +44,7 @@ if not os.path.exists(result_path):
         model_kwargs=model_kwargs,
         index_expansion_chunk=batch_size_index_expansion * 20
     )
-    if not os.path.exists(index_meta_embedding_path):
+    if not os.path.exists(index_expansion_path):
         pipe.encode_expansion(
             corpus=corpus,
             index2id=index2id,

@@ -56,7 +56,9 @@ def get_semantic_search_result(
             corpus = json.load(f)["corpus"]
         numpy_files = []
         flags = []
-        for numpy_file in glob(f"{output_dir}/embedding.*.npy"):
+        files = glob(f"{output_dir}/embedding.*.npy")
+        files = files[:2200]
+        for numpy_file in tqdm(files, total=len(files)):
             start, end = numpy_file.split("/embedding.")[-1].replace(".npy", "").split("-")
             start, end = int(start), int(end)
             assert start not in flags and end - 1 not in flags, f"{start}, {end - 1}"
@@ -64,9 +66,9 @@ def get_semantic_search_result(
             numpy_files.append([start, numpy_file])
         numpy_files = sorted(numpy_files, key=lambda x: x[0])
         embedding = []
-        for _, numpy_file in numpy_files:
+        for _, numpy_file in tqdm(numpy_files, total=len(numpy_files)):
             embedding.append(np_load(numpy_file))
-        embedding = torch.as_tensor(np.concatenate(embedding)).to(device)
+        embedding = torch.as_tensor(np.concatenate(embedding))
         assert len(embedding) == len(index2id) == len(corpus), f"{len(embedding)}, {len(index2id)}, {len(corpus)}"
         return index2id, corpus, embedding
 

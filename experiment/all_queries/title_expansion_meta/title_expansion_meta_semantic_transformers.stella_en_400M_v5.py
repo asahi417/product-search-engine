@@ -44,7 +44,7 @@ if not os.path.exists(result_path):
         model_kwargs=model_kwargs,
         index_expansion_chunk=batch_size_index_expansion * 20
     )
-    if not os.path.exists(index_meta_embedding_path):
+    if not os.path.exists(index_expansion_path):
         pipe.encode_expansion(
             corpus=corpus,
             index2id=index2id,
@@ -53,6 +53,7 @@ if not os.path.exists(result_path):
             prompt_prefix=prompt_prefix_index_expansion,
             prompt_suffix=prompt_suffix_index_expansion
         )
+    exit()
     result = get_semantic_search_result(
         index_path=index_path,
         query_path=query_path,
