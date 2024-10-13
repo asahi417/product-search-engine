@@ -53,7 +53,6 @@ if not os.path.exists(result_path):
             prompt_prefix=prompt_prefix_index_expansion,
             prompt_suffix=prompt_suffix_index_expansion
         )
-    exit()
     result = get_semantic_search_result(
         index_path=index_path,
         query_path=query_path,

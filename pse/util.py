@@ -57,7 +57,6 @@ def get_semantic_search_result(
         numpy_files = []
         flags = []
         files = glob(f"{output_dir}/embedding.*.npy")
-        files = files[:2200]
         for numpy_file in tqdm(files, total=len(files)):
             start, end = numpy_file.split("/embedding.")[-1].replace(".npy", "").split("-")
             start, end = int(start), int(end)
@@ -67,8 +66,8 @@ def get_semantic_search_result(
         numpy_files = sorted(numpy_files, key=lambda x: x[0])
         embedding = []
         for _, numpy_file in tqdm(numpy_files, total=len(numpy_files)):
-            embedding.append(np_load(numpy_file))
-        embedding = torch.as_tensor(np.concatenate(embedding))
+            embedding.append(np_load(numpy_file).astype(np.float16))
+        embedding = torch.as_tensor(np.concatenate(embedding), dtype=torch.float16)
         assert len(embedding) == len(index2id) == len(corpus), f"{len(embedding)}, {len(index2id)}, {len(corpus)}"
         return index2id, corpus, embedding
 
@@ -116,8 +115,8 @@ def get_semantic_search_result(
         index_index2id, index_corpus, index_embedding = load_index(index_path)
         logger.info(f"load document: {index_embedding.shape}")
     search_result = semantic_search(
-        query_embedding,
-        index_embedding,
+        query_embedding.to(device),
+        index_embedding.to(device),
         query_chunk_size=query_chunk_size,
         corpus_chunk_size=corpus_chunk_size,
         top_k=k
