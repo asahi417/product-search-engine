@@ -17,7 +17,7 @@ pip install xformers
 
 ## Experiments
 - [Baseline](https://code.amazon.com/packages/SymptomQueryExperiment/trees/mainline/--/experiment/all_queries/baseline): Use all the meta data including title and catalogue data.
-- [Baseline with Expansion]([https://code.amazon.com/packages/SymptomQueryExperiment/trees/mainline/--/experiment/all_queries/baseline](https://code.amazon.com/packages/SymptomQueryExperiment/trees/mainline/--/experiment/all_queries/baseline_expansion)): Baseline + Symptom Token Expansion
+- [Baseline with Expansion](https://code.amazon.com/packages/SymptomQueryExperiment/trees/mainline/--/experiment/all_queries/baseline): Baseline + Symptom Token Expansion
 - [Title](https://code.amazon.com/packages/SymptomQueryExperiment/trees/mainline/--/experiment/all_queries/title): Use title only.
 - [Title with Expansion](https://code.amazon.com/packages/SymptomQueryExperiment/trees/mainline/--/experiment/all_queries/title_expansion): Title + Symptom Token Expansion 
 - [Meta Embedding](https://code.amazon.com/packages/SymptomQueryExperiment/trees/mainline/--/experiment/all_queries/title_expansion_meta): Meta embedding method explained at [here](https://quip-amazon.com/warbAaLnbZ6I/WIP-Generative-Query-Ingestion#temp:C:JJKdf0328445ab64a769904d2803).
