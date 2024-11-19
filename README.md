@@ -25,3 +25,5 @@ pip install xformers
 To get the result with symptom queries only, see [here](https://code.amazon.com/packages/SymptomQueryExperiment/trees/mainline/--/experiment/partial_queries).
 
 The final symptom query annotation is avalable [here](https://code.amazon.com/packages/SymptomQueryExperiment/blobs/mainline/--/experiment/partial_queries/annotation.csv).
+
+The symptom tokens used in the expansion can be found [here](https://code.amazon.com/packages/SymptomQueryExperiment/blobs/mainline/--/experiment/all_queries/output/expansion/expansion_1.json).
