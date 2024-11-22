@@ -36,7 +36,8 @@ setup(
         "bm25s",
         "sentence_transformers",
         "torch",
-        "scikit-learn"
+        "scikit-learn",
+        "onnxruntime"
     ],
     python_requires='>=3.7',
     entry_points={

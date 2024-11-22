@@ -15,6 +15,12 @@ pip install flash-attn --no-build-isolation
 pip install xformers
 ```
 
+Running ONNX on GPUs. 
+```shell
+pip uninstall onnxruntime
+pip install onnxruntime-gpu
+```
+
 ## Experiments
 - [Baseline](https://code.amazon.com/packages/SymptomQueryExperiment/trees/mainline/--/experiment/all_queries/baseline): Use all the meta data including title and catalogue data.
 - [Baseline with Expansion](https://code.amazon.com/packages/SymptomQueryExperiment/trees/mainline/--/experiment/all_queries/baseline): Baseline + Symptom Token Expansion
