@@ -27,6 +27,10 @@ with open(output, "w") as f:
 def clean_name(name: str) -> str:
     if "lexical" in name:
         return name.replace("lexical_bm25s", "bm25").replace(".", "/")
+    if "magnus_encoder" in name:
+        if "title" in name or "expansion" in name:
+            mode = name.split(".")[1].replace("baseline_", "")
+            return f"magnus_encoder/{mode}"
     name = name.replace("semantic_transformers.", "")
     if "title" in name or "expansion" in name:
         mode = name.split(".")[0].replace("baseline_", "")
