@@ -1,6 +1,5 @@
-from typing import List, Dict, Optional
+from typing import List, Optional
 
-import torch
 import numpy as np
 import onnxruntime as ort
 from transformers import AutoTokenizer, PreTrainedTokenizer
@@ -17,8 +16,8 @@ class MagnusEncoder:
     def __init__(
             self,
             tokenizer_path: str = 'experiment/all_queries/output/magnus_encoder_ckpt/hf_spm_vocab_150k_uncased',
-            model_path_q: str ='experiment/all_queries/output/magnus_encoder_ckpt/mme15v1us_query_model_batched.onnx',
-            model_path_d: str ='experiment/all_queries/output/magnus_encoder_ckpt/mme15v1us_asin_model.onnx',
+            model_path_q: str = 'experiment/all_queries/output/magnus_encoder_ckpt/mme15v1us_query_model_batched.onnx',
+            model_path_d: str = 'experiment/all_queries/output/magnus_encoder_ckpt/mme15v1us_asin_model.onnx',
     ):
         self.tokenizer = AutoTokenizer.from_pretrained(tokenizer_path)
         self.model_q = ort.InferenceSession(model_path_q)
@@ -40,7 +39,6 @@ class MagnusEncoder:
             token_ids = tokens[index * batch_size: (index + 1) * batch_size]
             token_mask = tokens_masked[index * batch_size: (index + 1) * batch_size]
             v = model.run(None, {'token_ids': token_ids, 'token_mask': token_mask})[0]
-            print(v.shape, index, len(token_ids))
             embeddings.append(v)
             index += 1
         return np.concatenate(embeddings)

@@ -4,25 +4,26 @@ import json
 from tqdm import tqdm
 from pse.search_semantic import SemanticSearchTransformers
 from pse.util import get_semantic_search_result
-from pse.dataset_util import get_corpus_from_hf, get_query_from_hf, get_label_from_hf
+from pse.dataset_util import get_corpus_from_hf, get_label_from_hf
 
 model = "magnus_encoder"
-batch_size_query = 2048
-batch_size_index = 512
+batch_size_index = 1024
 model_kwargs = None
 prompt_name_index = None
 prompt_prefix_index = None
 prompt_suffix_index = None
-prompt_name_query = None
-prompt_prefix_query = None
-prompt_suffix_query = None
 
 # config
-index_path = f"./experiment/all_queries/output/cache/magnus_encoder.index"
+expansion_file = "expansion_1"
+index_path = f"./experiment/all_queries/output/cache/magnus_encoder.baseline_{expansion_file}.index"
 query_path = f"./experiment/all_queries/output/cache/magnus_encoder.query"
-result_path = f"./experiment/all_queries/output/result/magnus_encoder.json"
-result_label_path = f"./experiment/all_queries/output/result/magnus_encoder.label.json"
+result_path = f"./experiment/all_queries/output/result/magnus_encoder.baseline_{expansion_file}.json"
+result_label_path = f"./experiment/all_queries/output/result/magnus_encoder.baseline_{expansion_file}.label.json"
 os.makedirs(os.path.dirname(result_path), exist_ok=True)
+
+# load symptom tokens
+with open(f"./experiment/all_queries/output/expansion/{expansion_file}.json") as f:
+    expansion_dict = json.load(f)
 
 # run experiment
 if not os.path.exists(result_path):
@@ -33,9 +34,14 @@ if not os.path.exists(result_path):
         model=model,
         model_kwargs=model_kwargs,
         index_chunk=batch_size_index * 20,
-        query_chunk=batch_size_query * 20
     )
     corpus, index2id = get_corpus_from_hf()
+
+    # expand document
+    id2index = {v: k for k, v in index2id.items()}
+    expansion_dict = {id2index[k]: v for k, v in expansion_dict.items()}
+    corpus = [i if n not in expansion_dict else f"{i}\n{expansion_dict[n]}" for n, i in enumerate(corpus)]
+
     pipe.encode_document(
         corpus=corpus,
         index2id=index2id,
@@ -43,15 +49,6 @@ if not os.path.exists(result_path):
         prompt_name=prompt_name_index,
         prompt_prefix=prompt_prefix_index,
         prompt_suffix=prompt_suffix_index
-    )
-    corpus, index2id = get_query_from_hf()
-    pipe.encode_query(
-        corpus=corpus,
-        index2id=index2id,
-        batch_size=batch_size_query,
-        prompt_name=prompt_name_query,
-        prompt_prefix=prompt_prefix_query,
-        prompt_suffix=prompt_suffix_query
     )
     result = get_semantic_search_result(
         index_path=index_path,
@@ -76,6 +73,6 @@ for k, v in tqdm(search_result.items()):
             labeled_search[k].append({"id": hit["id"], "label": "None", "ranking": rank + 1, "score": hit["score"]})
     for product_id, label in labels[k].items():
         if product_id not in labeled_search[k]:
-            labeled_search[k].append({"id": product_id, "label": label, "ranking": -100, "score": 0})
+            labeled_search[k].append({"id": product_id, "label": label, "ranking": -100, "score": -100})
 with open(result_label_path, "w") as f:
     json.dump(labeled_search, f)
